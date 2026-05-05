@@ -1,24 +1,25 @@
+import 'dotenv/config';
 import express from 'express';
-import mysql from 'mysql2';
-import dotenv from 'dotenv';
 import cors from 'cors';
+import authRoutes from './routes/auth.routes.js'
+// TODO : importer vos routes au fur et à mesure
 
-// Charge les variables du fichier .env dans process.env
-dotenv.config();
+import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
+const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// Middlewares globaux
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
+// Exemple avec une route — à dupliquer pour chaque groupe de routes
+app.use('/api/auth', authRoutes);
+// TODO : brancher les autres routes ici
 
+// Gestionnaire d'erreurs — toujours EN DERNIER
+app.use(errorHandler);
 
-
-
-
-
-
-const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
+  console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });

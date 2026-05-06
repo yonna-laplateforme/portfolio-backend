@@ -1,25 +1,32 @@
-import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './routes/auth.routes.js'
-// TODO : importer vos routes au fur et à mesure
+import 'dotenv/config';
 
+// Imports des routes
+import authRoutes from './routes/auth.routes.js';
+import projectRoutes from './routes/project.routes.js';
+// Import du middleware d'erreur (doit être importé à la fin)
 import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Middlewares globaux
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors());
 app.use(express.json());
 
-// Exemple avec une route — à dupliquer pour chaque groupe de routes
+// Branchement des routes
 app.use('/api/auth', authRoutes);
-// TODO : brancher les autres routes ici
+app.use('/api/projects', projectRoutes);
 
-// Gestionnaire d'erreurs — toujours EN DERNIER
+// Test de base
+app.get('/', (req, res) => {
+  res.send('API Portfolio en ligne ✅');
+});
+
+// IMPORTANT : Le errorHandler doit être placé APRES toutes les routes
 app.use(errorHandler);
 
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Serveur démarré sur http://localhost:${PORT}`);
+  console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);
 });

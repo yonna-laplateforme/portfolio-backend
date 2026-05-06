@@ -1,56 +1,17 @@
-import { Router } from "express";
-// Import des validateurs de projet (à créer dans src/validators/project.validator.js)
-import { validateProject } from "../validators/project.validator.js";
-// Import des middlewares
-import validate from "../middlewares/validate.middleware.js";
-import { authenticate } from "../middlewares/auth.middleware.js";
-import { authorize } from "../middlewares/authorize.middleware.js";
+import express from 'express';
+import { getAllProjects, getProjectById, createProject, updateProject, deleteProject} from '../controllers/project.controller.js';
+import { authenticate, authorize } from '../middlewares/auth.middleware.js'; 
+import { projectValidationRules } from '../validators/project.validator.js';
+import validate from '../middlewares/validate.middleware.js';
 
-// On importe les fonctions avec leurs nouveaux noms de "Project"
-import {
-  getAllProjects,
-  getProjectById,
-  createProject,
-  updateProject,
-  deleteProject,
-} from "../controllers/project.controller.js";
+const router = express.Router();
 
-const router = Router();
+router.get('/', getAllProjects);
+router.get('/:id', getProjectById);
 
-/**
- * ROUTES PUBLIQUES
- */
-router.get("/", getAllProjects);
-router.get("/:id", getProjectById);
 
-/**
- * ROUTES PRIVÉES (ADMIN UNIQUEMENT)
- * On ajoute la couche de sécurité JWT ici
- */
-
-// Créer un projet
-router.post("/", 
-  authenticate, 
-  authorize('admin'), 
-  validateProject, 
-  validate, 
-  createProject
-);
-
-// Modifier un projet
-router.put("/:id", 
-  authenticate, 
-  authorize('admin'), 
-  validateProject, 
-  validate, 
-  updateProject
-);
-
-// Supprimer un projet
-router.delete("/:id", 
-  authenticate, 
-  authorize('admin'), 
-  deleteProject
-);
+router.post('/', authenticate, authorize('admin'), projectValidationRules, validate, createProject);
+router.put('/:id', authenticate, authorize('admin'), projectValidationRules, validate, updateProject);
+router.delete('/:id', authenticate, authorize('admin'), deleteProject);
 
 export default router;

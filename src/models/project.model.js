@@ -1,77 +1,43 @@
-import db from "../config/db.js";
+import db from '../config/db.js';
 
-/**
- * RÉCUPÉRER TOUS LES PROJETS
- */
 export const findAll = async () => {
-    
-    const sql = "SELECT * FROM projects ORDER BY created_at DESC";
-    const [rows] = await db.query(sql);
+    const [rows] = await db.execute('SELECT * FROM projects ORDER BY created_at DESC');
     return rows;
 };
 
-/**
- * RÉCUPÉRER UN PROJET PAR SON ID
- */
 export const findById = async (id) => {
-    const sql = "SELECT * FROM projects WHERE id = ?";
-    const [rows] = await db.query(sql, [id]);
+    const [rows] = await db.execute('SELECT * FROM projects WHERE id = ?', [id]);
+    // rows est un tableau, on retourne le premier élément ou null
     return rows[0] || null;
 };
 
-/**
- * CRÉER 
- */
-export const create = async (projectData) => {
-    const { title, description, tech_stack, github_url, demo_url, image_url } = projectData;
+export const create = async (data) => {
+    const { title, description, tech_stack, github_url, demo_url, image_url } = data;
     
-    const sql = `
-        INSERT INTO projects (title, description, tech_stack, github_url, demo_url, image_url) 
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
+    const [result] = await db.execute(
+        'INSERT INTO projects (title, description, tech_stack, github_url, demo_url, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+        [title, description, tech_stack, github_url, demo_url, image_url]
+    );
     
-    const [result] = await db.query(sql, [
-        title, 
-        description, 
-        tech_stack, 
-        github_url, 
-        demo_url, 
-        image_url
-    ]);
-    
-    return result.insertId;
+   
+    return await findById(result.insertId);
 };
 
-/**
- * METTRE À JOUR 
- */
-export const update = async (id, projectData) => {
-    const { title, description, tech_stack, github_url, demo_url, image_url } = projectData;
 
-    const sql = `
-        UPDATE projects 
-        SET title = ?, description = ?, tech_stack = ?, github_url = ?, demo_url = ?, image_url = ? 
-        WHERE id = ?
-    `;
-
-    const [result] = await db.query(sql, [
-        title, 
-        description, 
-        tech_stack, 
-        github_url, 
-        demo_url, 
-        image_url, 
-        id
-    ]);
-    
-    return result.affectedRows > 0;
+export const update = async (id, data) => {
+  const { title, description, tech_stack, github_url, demo_url, image_url } = data;
+  const [result] = await db.execute(
+    'UPDATE projects SET title = ?, description = ?, tech_stack = ?, github_url = ?, demo_url = ?, image_url = ? WHERE id = ?',
+    [title, description, tech_stack, github_url, demo_url, image_url, id]
+  );
+  
+  // Retourne true si au moins une ligne a été modifiée, sinon false
+  return result.affectedRows > 0;
 };
 
-/**
- * SUPPRIMER 
- */
-export const supp = async (id) => {
-    const sql = "DELETE FROM projects WHERE id = ?";
-    const [result] = await db.query(sql, [id]);
-    return result.affectedRows > 0;
+export const remove = async (id) => {
+  const [result] = await db.execute('DELETE FROM projects WHERE id = ?', [id]);
+  
+  // Retourne true si une ligne a été supprimée, sinon false
+  return result.affectedRows > 0;
 };

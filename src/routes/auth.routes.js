@@ -1,7 +1,11 @@
 import express from 'express';
+import { login } from '../controllers/auth.controller.js';
+import { validateAuth } from '../validators/auth.validator.js';
+import validate from '../middlewares/validate.middleware.js';
+
 const router = express.Router();
 
-// Route temporaire pour pas que ça crash
-router.get('/', (req, res) => res.send("Auth route active"));
+
+router.post('/login', validateAuth, validate, login);
 
 export default router;

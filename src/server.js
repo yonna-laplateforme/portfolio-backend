@@ -5,6 +5,7 @@ import 'dotenv/config';
 // Imports des routes
 import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
+import contactRoutes from './routes/contact.routes.js';
 // Import du middleware d'erreur (doit être importé à la fin)
 import errorHandler from './middlewares/errorHandler.js';
 
@@ -17,6 +18,7 @@ app.use(express.json());
 // Branchement des routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Test de base
 app.get('/', (req, res) => {

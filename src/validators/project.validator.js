@@ -1,4 +1,6 @@
-import { body } from 'express-validator';
+import { body ,param} from 'express-validator';
+
+
 
 export const projectValidationRules = [
     body('title')
@@ -27,4 +29,10 @@ export const projectValidationRules = [
     body('image_url')
         .optional({ checkFalsy: true })
         .isURL().withMessage("L'URL de l'image doit être valide")
+];
+
+export const projectValidationId = [
+    param('id')
+        .isInt({ min: 1 })
+        .withMessage("l'id doit être un entier positif")
 ];

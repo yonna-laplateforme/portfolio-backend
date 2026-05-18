@@ -12,16 +12,31 @@ export const getProjectById = async (req, res) => {
 };
 
 export const createProject = async (req, res) => {
-    const project = await ProjectService.createProject(req.body);
+    const projectData = { ...req.body };
+
+    // Changement ici : on prend le 'path' fourni par Cloudinary
+    if (req.file) {
+        projectData.image_url = req.file.path; 
+    }
+
+    const project = await ProjectService.createProject(projectData);
     res.status(201).json(project);
 };
 
 export const updateProject = async (req, res) => {
-  const project = await ProjectService.updateProject(req.params.id, req.body);
-  res.json(project);
+    const { id } = req.params;
+    const projectData = { ...req.body };
+
+    // Changement ici : on prend le 'path' fourni par Cloudinary
+    if (req.file) {
+        projectData.image_url = req.file.path; 
+    }
+
+    const project = await ProjectService.updateProject(id, projectData);
+    res.json(project);
 };
 
 export const deleteProject = async (req, res) => {
-  await ProjectService.deleteProject(req.params.id);
-  res.status(204).send(); 
+    await ProjectService.deleteProject(req.params.id);
+    res.status(204).send(); 
 };

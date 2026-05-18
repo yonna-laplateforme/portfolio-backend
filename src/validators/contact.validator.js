@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body} from 'express-validator';
 
 export const contactValidationRules = [
   body('name')
@@ -18,3 +18,4 @@ export const contactValidationRules = [
     .trim()
     .escape()
 ];
+

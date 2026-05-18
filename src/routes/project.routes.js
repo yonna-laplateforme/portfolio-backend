@@ -1,17 +1,57 @@
 import express from 'express';
-import { getAllProjects, getProjectById, createProject, updateProject, deleteProject} from '../controllers/project.controller.js';
+import { 
+  getAllProjects, 
+  getProjectById, 
+  createProject, 
+  updateProject, 
+  deleteProject 
+} from '../controllers/project.controller.js';
+
 import { authenticate, authorize } from '../middlewares/auth.middleware.js'; 
-import { projectValidationRules } from '../validators/project.validator.js';
+import { projectValidationRules, projectValidationId } from '../validators/project.validator.js';
 import validate from '../middlewares/validate.middleware.js';
+import { upload } from '../utils/cloudinary.js'; 
 
 const router = express.Router();
 
+// --- ROUTES PUBLIQUES ---
+
+// Correction : On retire projectValidationRules ici (pas besoin de valider un body sur un GET)
 router.get('/', getAllProjects);
-router.get('/:id', getProjectById);
 
+// Ajout du middleware validate pour l'ID
+router.get('/:id', projectValidationId, validate, getProjectById);
 
-router.post('/', authenticate, authorize('admin'), projectValidationRules, validate, createProject);
-router.put('/:id', authenticate, authorize('admin'), projectValidationRules, validate, updateProject);
-router.delete('/:id', authenticate, authorize('admin'), deleteProject);
+// --- ROUTES ADMIN ---
+
+// Créer un projet (POST)
+router.post('/', 
+  authenticate, 
+  authorize('admin'), 
+  upload.single('image'), // Analyse le FormData en premier (important !)
+  projectValidationRules, 
+  validate, 
+  createProject
+);
+
+// Modifier un projet (PUT)
+router.put('/:id', 
+  authenticate, 
+  authorize('admin'), 
+  upload.single('image'), 
+  projectValidationId,    // Valide d'abord l'ID (9)
+  projectValidationRules, // Puis valide les champs envoyés
+  validate, 
+  updateProject
+);
+
+// Supprimer un projet (DELETE)
+router.delete('/:id', 
+  authenticate, 
+  authorize('admin'), 
+  projectValidationId, // Optionnel mais conseillé
+  validate,
+  deleteProject
+);
 
 export default router;

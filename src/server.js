@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import 'dotenv/config';
+
 
 // Imports des routes
 import authRoutes from './routes/auth.routes.js';
@@ -12,10 +14,15 @@ import errorHandler from './middlewares/errorHandler.js';
 const app = express();
 
 // Middlewares globaux
+app.use(helmet({
+  contentSecurityPolicy: false, 
+}));
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  // 👇 Regarde bien les guillemets individuels pour chaque URL
+  origin: ['http://localhost:5173', 'http://localhost:4173'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.static('public'));
@@ -25,6 +32,7 @@ app.use('/uploads', express.static('public/uploads'));
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
+
 
 
 // Test de base

@@ -2,21 +2,22 @@ import nodemailer from 'nodemailer';
 import AppError from '../errors/AppError.js';
 
 export const sendContactEmail = async ({ name, email, message }) => {
-  // 1. Création du transporteur
+  
+  // 💡 DÉPLACEMENT ICI : Le transporteur est créé à la demande, les variables .env sont lues à coup sûr !
   const transporter = nodemailer.createTransport({
+    service: 'gmail',
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // true pour le port 465, false pour le 587
+    port: 465,
+    secure: true, 
     auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
+      user: process.env.MAIL_USER, // yonna.s.merlini@gmail.com
+      pass: process.env.MAIL_PASS, // pekyuirstnlkdrhr
     },
   });
 
-  // 2. Configuration du contenu de l'email
   const mailOptions = {
-    from: `"${name}" <${process.env.MAIL_USER}>`, // Gmail force souvent l'expéditeur authentifié
-    replyTo: email, // Permet de répondre directement au visiteur
+    from: `"${name}" <${process.env.MAIL_USER}>`, 
+    replyTo: email, 
     to: process.env.MAIL_TO,
     subject: `Nouveau message Portfolio de ${name}`,
     text: `Vous avez reçu un message de : ${name} (${email})\n\nMessage :\n${message}`,
@@ -25,16 +26,16 @@ export const sendContactEmail = async ({ name, email, message }) => {
       <p><strong>Nom :</strong> ${name}</p>
       <p><strong>Email :</strong> ${email}</p>
       <p><strong>Message :</strong></p>
-      <p>${message}</p>
+      <p style="white-space: pre-wrap;">${message}</p>
     `,
   };
 
   try {
-    // 3. Envoi effectif
     await transporter.sendMail(mailOptions);
+    console.log('✉️ Email envoyé avec succès par le Service !');
     return true;
   } catch (error) {
-    console.error('Erreur Nodemailer:', error);
+    console.error('Erreur Nodemailer directe :', error);
     throw new AppError("L'envoi de l'email a échoué. Veuillez réessayer plus tard.", 500);
   }
 };

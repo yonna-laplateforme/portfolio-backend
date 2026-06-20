@@ -1,38 +1,36 @@
-import { body ,param} from 'express-validator';
-
-
-
-export const projectValidationRules = [
-    body('title')
-        .notEmpty().withMessage('Le titre est obligatoire')
-        .isString().withMessage('Le titre doit être une chaîne de caractères')
-        .isLength({ min: 2, max: 150 }).withMessage('Le titre doit faire entre 2 et 150 caractères'),
-
-    body('description')
-        .optional()
-        .isString().withMessage('La description doit être une chaîne')
-        .isLength({ max: 2000 }).withMessage('La description ne peut pas dépasser 2000 caractères'),
-
-    body('tech_stack')
-        .optional()
-        .isString().withMessage('La tech_stack doit être une chaîne')
-        .isLength({ max: 255 }).withMessage('La tech_stack ne peut pas dépasser 255 caractères'),
-
-    body('github_url')
-        .optional({ checkFalsy: true }) // Permet de passer une chaîne vide
-        .isURL().withMessage('Le lien GitHub doit être une URL valide'),
-
-    body('demo_url')
-        .optional({ checkFalsy: true })
-        .isURL().withMessage('Le lien de démo doit être une URL valide'),
-
-    body('image_url')
-        .optional({ checkFalsy: true })
-        .isURL().withMessage("L'URL de l'image doit être valide")
-];
+// dans ../validators/project.validator.js
+import { body, param } from 'express-validator';
 
 export const projectValidationId = [
-    param('id')
-        .isInt({ min: 1 })
-        .withMessage("l'id doit être un entier positif")
+  param('id').isInt().withMessage('L\'ID doit être un nombre entier')
+];
+
+export const projectValidationRules = [
+  body('title').notEmpty().withMessage('Le titre est obligatoire'),
+  body('description').optional().isString(),
+  body('tech_stack').optional().isString(),
+  body('github_url')
+  .optional({ checkFalsy: true }) 
+  .isURL().withMessage('Le lien GitHub doit être une URL valide'),
+
+body('demo_url')
+  .optional({ checkFalsy: true })
+  .isURL().withMessage('Le lien de la démo doit être une URL valide'),
+  
+  // NOUVEAUX CHAMPS
+  body('client').optional().isString(),
+  body('role').optional().isString(),
+  body('date_realisation').optional().isString(),
+  body('visibility').optional().isIn(['Publié', 'Brouillon', 'Privé']).withMessage('Statut de visibilité invalide'),
+  
+  // Validation spécifique pour isFeatured venant d'un FormData
+ // Validation spécifique pour isFeatured
+  body('isFeatured')
+    .optional()
+    .customSanitizer(value => {
+        // Si la valeur est 1, '1', true ou 'true', on renvoie 1. Sinon 0.
+        return (value == 1 || value === 'true' || value === true) ? 1 : 0;
+    })
+    .isInt({ min: 0, max: 1 }) // Vérifie que c'est bien 0 ou 1
+    .withMessage('isFeatured doit être 0 ou 1')
 ];

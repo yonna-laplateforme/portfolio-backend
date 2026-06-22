@@ -14,10 +14,19 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'portfolio_projects', // Nom du dossier qui sera créé sur Cloudinary
+    folder: 'portfolio_projects',
     allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
-    transformation: [{ width: 800, height: 600, crop: 'limit' }] // Optionnel: redimensionne auto
+    format: 'webp', 
+    transformation: [
+        { width: 800, height: 600, crop: 'limit', quality: 'auto', fetch_format: 'webp' }
+    ]
   },
 });
 
-export const upload = multer({ storage });
+
+export const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5 Mo maximum
+  }
+});

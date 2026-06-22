@@ -67,6 +67,10 @@ export const updateProject = async (req, res) => {
         projectData.isFeatured = 0; // Valeur par défaut
     }
 
+    if (req.body.category) {
+        projectData.category = req.body.category.toUpperCase();
+    }
+
     if (req.file) {
         projectData.image_url = req.file.path; 
     }

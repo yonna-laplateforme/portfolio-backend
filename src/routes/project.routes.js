@@ -16,7 +16,6 @@ const router = express.Router();
 
 // --- ROUTES PUBLIQUES ---
 
-// Correction : On retire projectValidationRules ici (pas besoin de valider un body sur un GET)
 router.get('/', getAllProjects);
 
 // Ajout du middleware validate pour l'ID
@@ -28,7 +27,7 @@ router.get('/:id', projectValidationId, validate, getProjectById);
 router.post('/', 
   authenticate, 
   authorize('admin'), 
-  upload.single('image'), // Analyse le FormData en premier (important !)
+  upload.single('image'), 
   projectValidationRules, 
   validate, 
   createProject
@@ -49,7 +48,7 @@ router.put('/:id',
 router.delete('/:id', 
   authenticate, 
   authorize('admin'), 
-  projectValidationId, // Optionnel mais conseillé
+  projectValidationId, 
   validate,
   deleteProject
 );

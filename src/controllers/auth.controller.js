@@ -8,7 +8,7 @@ import * as authService from '../services/auth.service.js';
  * Il est exporté pour être utilisé par le routeur (ex: auth.routes.js).
  * La fonction est 'async' car elle va attendre une réponse asynchrone du service (la vérification en BDD).
  */
-export const login = async (req, res) => {
+ const login = async (req, res) => {
   // On utilise la déstructuration (ES6) pour extraire 'email' et 'password'
   // directement depuis le corps de la requête HTTP (req.body).
   const { email, password } = req.body;
@@ -22,4 +22,5 @@ export const login = async (req, res) => {
   // Si tout s'est bien passé (pas d'erreur levée), on renvoie une réponse HTTP
   // au format JSON contenant le jeton d'authentification (Token JWT généralement) avec un statut 200 par défaut.
   res.json({ token });
-};
+ };
+export default login;

@@ -1,6 +1,6 @@
 import { body} from 'express-validator';
 
-export const contactValidationRules = [
+const contactValidationRules = [
   body('name')
     .notEmpty()
     .withMessage('Le nom est obligatoire')
@@ -18,4 +18,4 @@ export const contactValidationRules = [
     .trim()
     .escape()
 ];
-
+export default contactValidationRules;

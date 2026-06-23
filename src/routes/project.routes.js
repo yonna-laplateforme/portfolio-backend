@@ -10,7 +10,7 @@ import {
 import { authenticate, authorize } from '../middlewares/auth.middleware.js'; 
 import { projectValidationRules, projectValidationId } from '../validators/project.validator.js';
 import validate from '../middlewares/validate.middleware.js';
-import { upload } from '../utils/cloudinary.js'; 
+import  upload  from '../utils/cloudinary.js'; 
 
 const router = express.Router();
 

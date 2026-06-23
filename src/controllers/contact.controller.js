@@ -12,7 +12,7 @@ import { sendSuccess } from '../utils/responseHandler.js';
  * - res : l'objet de la réponse HTTP (permet de renvoyer une réponse)
  * - next : une fonction Express pour passer au middleware suivant (très important pour les erreurs !)
  */
-export const sendContactMessage = async (req, res, next) => {
+ const sendContactMessage = async (req, res, next) => {
   // On utilise un bloc try...catch pour sécuriser l'opération.
   // Si tout se passe bien, on exécute le 'try'. Si une erreur survient, on bascule dans le 'catch'.
   try {
@@ -31,4 +31,5 @@ export const sendContactMessage = async (req, res, next) => {
     // envoie-la directement au middleware global de gestion des erreurs".
     next(error);
   }
-};
+ };
+export default sendContactMessage;

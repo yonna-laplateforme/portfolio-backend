@@ -8,6 +8,7 @@ import 'dotenv/config';
 import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import contactRoutes from './routes/contact.routes.js';
+import aboutRoutes from './routes/about.routes.js'
 
 import errorHandler from './middlewares/errorHandler.js';
 
@@ -19,7 +20,7 @@ app.use(helmet({
 }));
 app.use(cors({
   // 👇 Regarde bien les guillemets individuels pour chaque URL
-  origin: ['http://localhost:5173', 'http://localhost:4173'], 
+  origin: ['http://localhost:5173', 'http://localhost:8080'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -33,6 +34,8 @@ app.use('/uploads', express.static('public/uploads'));
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/about', aboutRoutes);
+
 
 
 

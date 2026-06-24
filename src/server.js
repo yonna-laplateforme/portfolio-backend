@@ -20,7 +20,7 @@ app.use(helmet({
 }));
 app.use(cors({
   // 👇 Regarde bien les guillemets individuels pour chaque URL
-  origin: ['http://localhost:5173', 'http://localhost:8080'], 
+  origin: ['http://localhost:5173','http://localhost:8080'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true

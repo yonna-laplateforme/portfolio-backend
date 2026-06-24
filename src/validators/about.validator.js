@@ -2,13 +2,16 @@ import { body } from 'express-validator';
 
 const aboutValidator = {
   rules: [
-    body('header_title').trim().notEmpty().withMessage('Le titre est requis'),
+    body('header_line1').trim().notEmpty().withMessage('La ligne 1 du header est requise'),
+    body('header_line2').trim().notEmpty().withMessage('La ligne 2 du header est requise'),
+    body('header_accent').trim().notEmpty().withMessage("L'accent est requis"),
     body('header_subtitle').trim().optional(),
     body('bio_text').trim().notEmpty().withMessage('La biographie est requise'),
-    body('philosophy_quote').trim().optional(),
-    body('philosophy_author').trim().optional(),
-    // On s'assure que expertises est bien un tableau
-    body('expertises').optional().isArray().withMessage('Les expertises doivent être une liste')
+    body('philosophy_prefix').trim().optional(),
+    body('philosophy_important').trim().optional(),
+    body('philosophy_suffix').trim().optional(),
+    body('philosophy_text').trim().notEmpty().withMessage('Le texte de philosophie est requis'),
+    body('philosophy_author').trim().optional()
   ]
 };
 

@@ -1,58 +1,40 @@
-import aboutModel from '../models/about.model.js';
+import * as AboutService from '../services/about.service.js';
 
-const aboutController = {
-  getAboutContent: async (req, res, next) => {
+export const getAboutContent = async (req, res) => {
     try {
-      const content = await aboutModel.getAboutContent();
-      
-      if (!content) {
-        return res.status(404).json({ message: "Contenu introuvable" });
-      }
-
-      // Gestion de la conversion JSON pour expertises
-      content.expertises = content.expertises_json ? JSON.parse(content.expertises_json) : [];
-      
-      res.status(200).json(content);
+        const content = await AboutService.getAboutContent();
+        res.json(content);
     } catch (error) {
-      next(error);
+        res.status(500).json({ message: "Erreur serveur" });
     }
-  },
-
-  updateAboutContent: async (req, res, next) => {
-    try {
-      const data = {
-        header_title: req.body.header_title,
-        header_subtitle: req.body.header_subtitle,
-        bio_text: req.body.bio_text,
-        philosophy_quote: req.body.philosophy_quote,
-        philosophy_author: req.body.philosophy_author,
-        expertises_json: req.body.expertises ? JSON.stringify(req.body.expertises) : null
-      };
-      
-      await aboutModel.updateAboutContent(data);
-      res.status(200).json({ message: "Contenu mis à jour avec succès" });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  uploadAboutPhoto: async (req, res, next) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "Aucune image fournie" });
-      }
-
-      const photoUrl = `/uploads/${req.file.filename}`;
-      await aboutModel.updatePhotoUrl(photoUrl);
-      
-      res.status(200).json({ 
-        message: "Photo mise à jour avec succès", 
-        photoUrl 
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
 };
 
-export default aboutController;
+export const updateAboutContent = async (req, res) => {
+    try {
+        const result = await AboutService.updateAboutContent(req.body);
+        res.json({ message: "Mise à jour réussie", result });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// C'est celle-ci qui manquait ou était mal nommée !
+export const uploadAboutPhoto = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "Aucun fichier reçu par le serveur" });
+        }
+        
+        // Log important pour déboguer le contenu renvoyé par Cloudinary
+        console.log("Fichier traité par Cloudinary :", req.file);
+        
+        const photoUrl = req.file.path;
+        await AboutService.updatePhotoUrl(photoUrl);
+        res.json({ photoUrl });
+    } catch (error) {
+        // AFFICHE L'ERREUR DANS LE TERMINAL
+        console.error("ERREUR DÉTAILLÉE DANS LE CONTRÔLEUR :", error);
+        res.status(500).json({ message: "Erreur upload", details: error.message });
+    }
+
+};

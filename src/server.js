@@ -19,8 +19,7 @@ app.use(helmet({
   contentSecurityPolicy: false, 
 }));
 app.use(cors({
-  // 👇 Regarde bien les guillemets individuels pour chaque URL
-  origin: ['http://localhost:5173','http://localhost:8080'], 
+  origin: ['http://localhost:5173', 'http://localhost', 'http://localhost:8080'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -47,7 +46,10 @@ app.get('/', (req, res) => {
 // IMPORTANT : Le errorHandler doit être placé APRES toutes les routes
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);
+// Assure-toi que cette ligne est présente et au-dessus de app.listen
+const PORT = process.env.PORT || 3001; 
+
+// Ensuite seulement, tu peux l'utiliser ici :
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Serveur démarré sur http://0.0.0.0:${PORT}`);
 });

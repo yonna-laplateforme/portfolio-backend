@@ -24,7 +24,7 @@ const db = mysql.createPool({
   // On force la conversion du port en Nombre (Number) car le fichier .env renvoie du texte (String).
   // Le "|| 8889" est une valeur de repli (fallback) : si process.env.DB_PORT n'existe pas, 
   // on utilise le port 8889 par défaut (souvent utilisé par MAMP).
-  port: Number(process.env.DB_PORT) || 8889, 
+  port: Number(process.env.DB_PORT) || 3306, 
 });
 
 // On exporte notre pool de connexion ('db') par défaut.

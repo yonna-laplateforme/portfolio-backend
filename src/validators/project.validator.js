@@ -22,12 +22,12 @@ export const projectValidationRules = [
   body('date_realisation').optional().isString(),
   body('visibility').optional().isIn(['Publié', 'Brouillon', 'Privé']).withMessage('Statut de visibilité invalide'),
   
-  // Validation corrigée pour accepter la casse du formulaire et la normaliser
-  body('category')
-    .optional()
-    .customSanitizer(value => value ? value.toLowerCase() : value) // Uniformise en minuscules pour la BDD
-    .isIn(['web', 'photo'])
-    .withMessage('La catégorie doit être soit web soit photo'),
+  // MISE À JOUR : Validation de category_id au lieu de category
+  body('category_id')
+    .notEmpty()
+    .withMessage('La catégorie est obligatoire')
+    .isInt()
+    .withMessage('La catégorie doit être un identifiant numérique'),
   
   // Validation spécifique pour isFeatured
   body('isFeatured')

@@ -1,55 +1,109 @@
 import db from '../config/db.js'
 import { sanitizeFeaturedValue } from '../utils/project.utils.js';
 
+
+export const findForHome = async () => {
+    const query = `
+        SELECT 
+            p.*, 
+            c.name AS category, 
+            GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
+        FROM project p
+        LEFT JOIN category c ON p.category_id = c.id
+        LEFT JOIN photo ph ON p.id = ph.project_id
+        WHERE p.isFeatured = 1
+        GROUP BY p.id
+        ORDER BY p.created_at DESC
+    `;
+    const [rows] = await db.execute(query);
+    return rows;
+};
 /**
  * Récupère tous les projets, du plus récent au plus ancien.
+ * NOUVEAU : Utilise JOIN pour inclure la catégorie et les photos
  */
 export const findAll = async () => {
-    const [rows] = await db.execute('SELECT * FROM project ORDER BY created_at DESC');
+    const query = `
+        SELECT 
+            p.*, 
+            c.name AS category, 
+            GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
+        FROM project p
+        LEFT JOIN category c ON p.category_id = c.id
+        LEFT JOIN photo ph ON p.id = ph.project_id
+        GROUP BY p.id
+        ORDER BY p.created_at DESC
+    `;
+    const [rows] = await db.execute(query);
     return rows;
 };
 
 /**
  * Récupère un projet spécifique par son ID.
+ * NOUVEAU : Utilise JOIN pour inclure la catégorie et les photos
  */
 export const findById = async (id) => {
-    const [rows] = await db.execute('SELECT * FROM project WHERE id = ?', [id]);
+    const query = `
+        SELECT 
+            p.*, 
+            c.name AS category, 
+            GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
+        FROM project p
+        LEFT JOIN category c ON p.category_id = c.id
+        LEFT JOIN photo ph ON p.id = ph.project_id
+        WHERE p.id = ?
+        GROUP BY p.id
+    `;
+    const [rows] = await db.execute(query, [id]);
     return rows[0] ?? null;
 };
 
 /**
- * Crée un nouveau projet.
+ * Crée un nouveau projet et ses images.
  */
 export const create = async (data) => {
+    // Attention : on utilise 'category_id' au lieu de 'category'
+    // et 'image_urls' (tableau) au lieu de 'image_url' (string)
     const {
-        title, description, tech_stack, github_url, demo_url, image_url,
-        client, role, date_realisation, visibility, isFeatured, category
+        title, description, tech_stack, github_url, demo_url, image_urls,
+        client, role, date_realisation, visibility, isFeatured, category_id
     } = data;
-
     
     const featuredValue = sanitizeFeaturedValue(isFeatured);
 
+    // 1. On insère le projet principal
     const [result] = await db.execute(
         `INSERT INTO project 
-        (title, description, tech_stack, github_url, demo_url, image_url, client, role, date_realisation, visibility, isFeatured, category) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (title, description, tech_stack, github_url, demo_url, client, role, date_realisation, visibility, isFeatured, category_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             title,
             description || null,
             tech_stack || null,
             github_url || null,
             demo_url || null,
-            image_url || null,
             client || null,
             role || null,
             date_realisation || null,
             visibility || 'Publié',
             featuredValue,
-            category || null
+            category_id || null
         ]
     );
 
-    return await findById(result.insertId);
+    const newProjectId = result.insertId;
+
+    // 2. On insère toutes les images dans la table 'photo'
+    if (image_urls && image_urls.length > 0) {
+        for (const url of image_urls) {
+            await db.execute(
+                'INSERT INTO photo (project_id, url) VALUES (?, ?)', 
+                [newProjectId, url]
+            );
+        }
+    }
+
+    return await findById(newProjectId);
 };
 
 /**
@@ -60,23 +114,21 @@ export const update = async (id, data) => {
     if (!currentProject) return false;
 
     const {
-        title, description, tech_stack, github_url, demo_url, image_url,
-        client, role, date_realisation, visibility, isFeatured, category
+        title, description, tech_stack, github_url, demo_url, image_urls,
+        client, role, date_realisation, visibility, isFeatured, category_id
     } = data;
 
-    const finalImageUrl = image_url || currentProject.image_url;
-
-    // ✨ ICI AUSSI : C'est beaucoup plus propre avec ta fonction !
     let finalIsFeatured = currentProject.isFeatured;
     if (isFeatured !== undefined) {
         finalIsFeatured = sanitizeFeaturedValue(isFeatured);
     }
 
+    // 1. Mise à jour de la table 'project'
     const [result] = await db.execute(
         `UPDATE project SET 
-            title = ?, description = ?, tech_stack = ?, github_url = ?, demo_url = ?, image_url = ?,
+            title = ?, description = ?, tech_stack = ?, github_url = ?, demo_url = ?,
             client = ?, role = ?, date_realisation = ?, visibility = ?, isFeatured = ? ,
-            category = ?
+            category_id = ?
         WHERE id = ?`,
         [
             title || currentProject.title,
@@ -84,16 +136,29 @@ export const update = async (id, data) => {
             tech_stack || currentProject.tech_stack,
             github_url !== undefined ? github_url : currentProject.github_url,
             demo_url !== undefined ? demo_url : currentProject.demo_url,
-            finalImageUrl,
             client !== undefined ? client : currentProject.client,
             role !== undefined ? role : currentProject.role,
             date_realisation !== undefined ? date_realisation : currentProject.date_realisation,
             visibility || currentProject.visibility,
             finalIsFeatured,
-            category || currentProject.category,
+            category_id !== undefined ? category_id : currentProject.category_id,
             id,
         ]
     );
+
+    // 2. Remplacement des images si de nouvelles images sont uploadées
+    if (image_urls && image_urls.length > 0) {
+        // Optionnel mais recommandé : on supprime les anciennes photos pour ce projet
+        await db.execute('DELETE FROM photo WHERE project_id = ?', [id]);
+        
+        // On insère les nouvelles
+        for (const url of image_urls) {
+            await db.execute(
+                'INSERT INTO photo (project_id, url) VALUES (?, ?)', 
+                [id, url]
+            );
+        }
+    }
 
     return result.affectedRows > 0;
 };
@@ -102,6 +167,7 @@ export const update = async (id, data) => {
  * Supprime un projet.
  */
 export const remove = async (id) => {
+    // Les photos liées seront supprimées automatiquement grâce à ON DELETE CASCADE
     const [result] = await db.execute('DELETE FROM project WHERE id = ?', [id]);
     return result.affectedRows > 0;
 };

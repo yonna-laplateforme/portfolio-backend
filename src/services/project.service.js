@@ -46,7 +46,12 @@ export const updateProject = async (id, projectData) => {
   // On retourne le projet mis à jour pour que le front puisse l'afficher
   return await projectModel.findById(id);
 };
-
+/**
+ * RÉCUPÉRER LES PROJETS POUR LA HOME (AVEC UNE SEULE IMAGE)
+ */
+export const getProjectsForHome = async () => {
+  return await projectModel.findForHome();
+};
 /**
  * SUPPRIMER UN PROJET
  */
@@ -58,4 +63,5 @@ export const deleteProject = async (id) => {
   }
 
   return true;
+  
 };

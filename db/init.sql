@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:8889
--- Généré le : jeu. 25 juin 2026 à 10:43
+-- Généré le : ven. 26 juin 2026 à 09:13
 -- Version du serveur : 8.0.40
 -- Version de PHP : 8.3.14
 
@@ -55,13 +55,33 @@ INSERT INTO `about_page` (`id`, `header_subtitle`, `portrait_url`, `bio_title`, 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `expertises`
+-- Structure de la table `category`
 --
 
-CREATE TABLE `expertises` (
+CREATE TABLE `category` (
   `id` int NOT NULL,
-  `category` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `items` text COLLATE utf8mb4_unicode_ci
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `category`
+--
+
+INSERT INTO `category` (`id`, `name`) VALUES
+(2, 'photo'),
+(1, 'web');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `photo`
+--
+
+CREATE TABLE `photo` (
+  `id` int NOT NULL,
+  `project_id` int NOT NULL,
+  `url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_cover` tinyint(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -77,25 +97,24 @@ CREATE TABLE `project` (
   `tech_stack` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `github_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `demo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `category` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `client` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `role` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_realisation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `visibility` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'Publié',
-  `isFeatured` tinyint(1) DEFAULT '0'
+  `isFeatured` tinyint(1) DEFAULT '0',
+  `category_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `project`
 --
 
-INSERT INTO `project` (`id`, `title`, `description`, `tech_stack`, `github_url`, `demo_url`, `image_url`, `created_at`, `updated_at`, `category`, `client`, `role`, `date_realisation`, `visibility`, `isFeatured`) VALUES
-(34, 'Projet photo', 'c\'est une plante verte', 'sony, lightroom', NULL, NULL, 'https://res.cloudinary.com/dltejn5sh/image/upload/v1782309194/portfolio_projects/ydulj3ixdkhhx63df0xk.webp', '2026-06-24 13:53:15', '2026-06-24 13:53:15', 'photo', 'perso', NULL, '2026', 'Publié', 1),
-(35, 'un autre projet ', 'plante', 'plante', NULL, NULL, 'https://res.cloudinary.com/dltejn5sh/image/upload/v1782317604/portfolio_projects/frsgwr5uanpty2h1wca7.webp', '2026-06-24 16:13:25', '2026-06-24 16:13:25', 'web', 'personnel', NULL, '2026', 'Publié', 1),
-(37, 'abcdefgh', 'June ', 'sony, lightroom', '', '', 'https://res.cloudinary.com/dltejn5sh/image/upload/v1782375766/portfolio_projects/ggkrgnpawrydywbwetcs.webp', '2026-06-25 08:22:46', '2026-06-25 08:23:02', 'PHOTO', 'June M', 'dev', '2026', 'Publié', 1);
+INSERT INTO `project` (`id`, `title`, `description`, `tech_stack`, `github_url`, `demo_url`, `created_at`, `updated_at`, `client`, `role`, `date_realisation`, `visibility`, `isFeatured`, `category_id`) VALUES
+(34, 'Projet photo', 'c\'est une plante verte', 'sony, lightroom', NULL, NULL, '2026-06-24 13:53:15', '2026-06-26 09:09:36', 'perso', NULL, '2026', 'Publié', 1, 2),
+(35, 'un autre projet ', 'plante', 'plante', NULL, NULL, '2026-06-24 16:13:25', '2026-06-26 09:09:36', 'personnel', NULL, '2026', 'Publié', 1, 1),
+(37, 'abcdefgh', 'June ', 'sony, lightroom', '', '', '2026-06-25 08:22:46', '2026-06-26 09:09:36', 'June M', 'dev', '2026', 'Publié', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -129,16 +148,25 @@ ALTER TABLE `about_page`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `expertises`
+-- Index pour la table `category`
 --
-ALTER TABLE `expertises`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `category`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
+
+--
+-- Index pour la table `photo`
+--
+ALTER TABLE `photo`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `project_id` (`project_id`);
 
 --
 -- Index pour la table `project`
 --
 ALTER TABLE `project`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_project_category` (`category_id`);
 
 --
 -- Index pour la table `user`
@@ -152,9 +180,15 @@ ALTER TABLE `user`
 --
 
 --
--- AUTO_INCREMENT pour la table `expertises`
+-- AUTO_INCREMENT pour la table `category`
 --
-ALTER TABLE `expertises`
+ALTER TABLE `category`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `photo`
+--
+ALTER TABLE `photo`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -168,6 +202,22 @@ ALTER TABLE `project`
 --
 ALTER TABLE `user`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `photo`
+--
+ALTER TABLE `photo`
+  ADD CONSTRAINT `photo_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `project`
+--
+ALTER TABLE `project`
+  ADD CONSTRAINT `fk_project_category` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

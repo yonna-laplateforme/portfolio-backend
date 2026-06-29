@@ -2,36 +2,31 @@ import Mailjet from 'node-mailjet';
 import AppError from '../errors/AppError.js';
 
 export const sendContactEmail = async ({ name, email, message }) => {
-  // Initialisation avec tes clés Mailjet (utilisées dans les variables d'environnement sur Render)
-  const mailjet = Mailjet.apiConnect(
-    process.env.MAIL_USER, // Ta clé API publique
-    process.env.MAIL_PASS  // Ta clé secrète
-  );
+  const auth = Buffer.from(`${process.env.MAIL_USER}:${process.env.MAIL_PASS}`).toString('base64');
 
-  try {
-    const request = await mailjet
-      .post("send", { 'version': 'v3.1' })
-      .request({
-        "Messages": [{
-          "From": {
-            "Email": "yonna.s.merlini@gmail.com", // DOIT être ton email validé sur Mailjet
-            "Name": "Portfolio Yonna"
-          },
-          "To": [{
-            "Email": process.env.MAIL_TO // L'adresse où tu reçois les messages
-          }],
-          "Subject": `Nouveau message de ${name}`,
-          "TextPart": `Nom: ${name}\nEmail: ${email}\nMessage: ${message}`,
-          "HTMLPart": `<h3>Nouveau message</h3>
-                       <p><strong>De :</strong> ${name} (${email})</p>
-                       <p><strong>Message :</strong><br>${message}</p>`
-        }]
-      });
+  const response = await fetch('https://api.mailjet.com/v3.1/send', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${auth}`
+    },
+    body: JSON.stringify({
+      Messages: [{
+        From: { Email: "yonna.s.merlini@gmail.com", Name: "Portfolio Yonna" },
+        To: [{ Email: process.env.MAIL_TO }],
+        Subject: `Nouveau message de ${name}`,
+        TextPart: `Nom: ${name}\nEmail: ${email}\nMessage: ${message}`,
+        HTMLPart: `<h3>Nouveau message</h3><p><strong>De :</strong> ${name} (${email})</p><p>${message}</p>`
+      }]
+    })
+  });
 
-    console.log("✅ Email envoyé avec succès via API REST");
-    return true;
-  } catch (error) {
-    console.error("❌ Erreur API Mailjet :", error.statusCode, error.message);
-    throw new AppError("L'envoi de l'email a échoué via API.", 500);
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("❌ Erreur API Mailjet :", errorData);
+    throw new Error("L'envoi de l'email a échoué.");
   }
+
+  console.log("✅ Email envoyé avec succès via Fetch API");
+  return true;
 };

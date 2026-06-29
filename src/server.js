@@ -19,19 +19,22 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json({ limit: '10mb' }));
 
-// 1. Branchement des API 
+// 1. Routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/about', aboutRoutes);
 
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
-
-
+// 2. Servir les fichiers statiques (images, css, js)
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+// 3. LA SOLUTION SANS ROUTER : Middleware manuel
+// Cette méthode n'utilise PAS app.get(), donc aucune erreur de validation
+app.use((req, res, next) => {
+  if (!req.path.startsWith('/api')) {
+    return res.sendFile(path.join(__dirname, '../public', 'index.html'));
+  }
+  next();
 });
 
 app.use(errorHandler);

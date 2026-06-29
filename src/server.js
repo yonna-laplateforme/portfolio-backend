@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -28,21 +29,25 @@ app.use('/api/about', aboutRoutes);
 // 2. Servir les fichiers statiques (images, css, js)
 app.use(express.static(path.join(__dirname, '../public')));
 
-// 3. LA SOLUTION SANS ROUTER : Middleware manuel
-// Cette méthode n'utilise PAS app.get(), donc aucune erreur de validation
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api')) {
-    // On demande à Node de nous donner le chemin absolu actuel
     const currentDir = process.cwd();
-    console.log("DEBUG: Dossier de travail actuel :", currentDir);
-    console.log("DEBUG: Contenu du dossier :", require('fs').readdirSync(currentDir));
+    // On liste les fichiers sans utiliser 'require'
+    const files = fs.readdirSync(currentDir);
+    console.log("DEBUG: Dossier actuel :", currentDir);
+    console.log("DEBUG: Contenu du dossier :", files);
     
-    // Si tu vois un dossier 'dist' ou 'build' dans les logs, remplace '../public' par '../dist'
-    return res.sendFile(path.join(currentDir, 'public', 'index.html'));
+    // On tente d'envoyer index.html s'il est à la racine ou dans 'public'
+    if (files.includes('index.html')) {
+       return res.sendFile(path.join(currentDir, 'index.html'));
+    } else if (fs.existsSync(path.join(currentDir, 'public', 'index.html'))) {
+       return res.sendFile(path.join(currentDir, 'public', 'index.html'));
+    }
+    
+    return res.status(404).send("Index.html introuvable dans la liste : " + files.join(', '));
   }
   next();
 });
-
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;

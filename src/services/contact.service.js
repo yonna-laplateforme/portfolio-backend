@@ -1,14 +1,17 @@
 import nodemailer from 'nodemailer';
 export const sendContactEmail = async ({ name, email, message }) => {
-  const transporter = nodemailer.createTransport({
-    host: 'in-v3.mailjet.com', 
+ const transporter = nodemailer.createTransport({
+    host: 'in-v3.mailjet.com',
     port: 587,
-    secure: false, 
+    secure: false, // TLS
+    requireTLS: true,
     auth: {
-      user: process.env.MAIL_USER, 
+      user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,
     },
-  });
+    connectionTimeout: 20000, // Augmenté à 20s
+    socketTimeout: 20000,
+});
 
   const mailOptions = {
     from: `"Ton Portfolio" <yonna.s.merlini@gmail.com>`, 

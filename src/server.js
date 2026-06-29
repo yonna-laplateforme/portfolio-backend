@@ -49,8 +49,13 @@ app.use(errorHandler);
 
 // Assure-toi que cette ligne est présente et au-dessus de app.listen
 const PORT = process.env.PORT || 3001; 
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+app.use((req, res, next) => {
+  // Si le chemin ne commence pas par /api, on envoie index.html
+  if (!req.path.startsWith('/api')) {
+    return res.sendFile(path.join(__dirname, '../public', 'index.html'));
+  }
+  // Sinon, on continue vers les routes API
+  next();
 });
 // Ensuite seulement, tu peux l'utiliser ici :
 app.listen(PORT, '0.0.0.0', () => {

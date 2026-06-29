@@ -19,11 +19,12 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // Souvent nécessaire pour React/Vite
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        imgSrc: ["'self'", "https://res.cloudinary.com", "data:", "blob:"], // Tes images et les blobs
-        connectSrc: ["'self'", "https://portfolio-backend-7xj4.onrender.com"], // Ton API
+        "default-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+        "img-src": ["'self'", "https://res.cloudinary.com", "data:", "blob:"],
+        "font-src": ["'self'", "https://fonts.gstatic.com"],
+        "connect-src": ["*"], // Autorise les connexions externes
       },
     },
   })

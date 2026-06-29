@@ -1,6 +1,6 @@
 import https from 'https';
 
-module.exports.sendContactEmail = async ({ name, email, message }) => {
+export const sendContactEmail = async ({ name, email, message }) => {
   const auth = Buffer.from(`${process.env.MAIL_USER}:${process.env.MAIL_PASS}`).toString('base64');
   
   const data = JSON.stringify({
@@ -19,7 +19,7 @@ module.exports.sendContactEmail = async ({ name, email, message }) => {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Basic ${auth}`,
-      'Content-Length': data.length
+      'Content-Length': Buffer.byteLength(data)
     }
   };
 
@@ -29,7 +29,7 @@ module.exports.sendContactEmail = async ({ name, email, message }) => {
       res.on('data', (chunk) => body += chunk);
       res.on('end', () => {
         console.log("DEBUG: Réponse Mailjet :", res.statusCode, body);
-        if (res.statusCode === 200) resolve(true);
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve(true);
         else reject(new Error("Erreur Mailjet: " + res.statusCode));
       });
     });

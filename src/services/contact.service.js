@@ -1,5 +1,4 @@
-
-const https = require('https');
+import https from 'https';
 
 module.exports.sendContactEmail = async ({ name, email, message }) => {
   const auth = Buffer.from(`${process.env.MAIL_USER}:${process.env.MAIL_PASS}`).toString('base64');

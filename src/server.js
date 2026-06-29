@@ -19,9 +19,9 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       "default-src": ["'self'"],
-      // Autorise les images depuis votre serveur et Cloudinary
+      // Autorise les images
       "img-src": ["'self'", "https://res.cloudinary.com", "data:"],
-      // Autorise les appels API vers votre backend Render
+      // Autorise spécifiquement votre backend Render
       "connect-src": ["'self'", "https://portfolio-backend-7xj4.onrender.com"],
       "style-src": ["'self'", "'unsafe-inline'"],
       "script-src": ["'self'", "'unsafe-inline'"],

@@ -49,7 +49,9 @@ app.use(errorHandler);
 
 // Assure-toi que cette ligne est présente et au-dessus de app.listen
 const PORT = process.env.PORT || 3001; 
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
 // Ensuite seulement, tu peux l'utiliser ici :
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Serveur démarré sur http://0.0.0.0:${PORT}`);

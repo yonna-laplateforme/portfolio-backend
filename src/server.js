@@ -16,8 +16,22 @@ const app = express();
 
 // Middlewares globaux
 app.use(helmet({
-  contentSecurityPolicy: false, 
+  contentSecurityPolicy: {
+    directives: {
+      // Autorise les scripts/styles de votre domaine
+      "default-src": ["'self'"],
+      // Autorise les images provenant de votre domaine ET de Cloudinary
+      "img-src": ["'self'", "https://res.cloudinary.com", "data:"],
+      // Autorise les feuilles de style (si vous en chargez depuis des CDN, ajoutez-les ici)
+      "style-src": ["'self'", "'unsafe-inline'"],
+      // Autorise les scripts (ajoutez 'unsafe-inline' si nécessaire)
+      "script-src": ["'self'", "'unsafe-inline'"],
+      // Désactive la mise à niveau automatique vers HTTPS si vous êtes en dev local
+      "upgrade-insecure-requests": null,
+    },
+  },
 }));
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,

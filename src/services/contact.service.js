@@ -1,27 +1,20 @@
-import nodemailer from 'nodemailer';
+import Mailjet from 'node-mailjet';
+
 export const sendContactEmail = async ({ name, email, message }) => {
- const transporter = nodemailer.createTransport({
-    host: 'in-v3.mailjet.com',
-    port: 587,
-    secure: false, // TLS
-    requireTLS: true,
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-    connectionTimeout: 20000, // Augmenté à 20s
-    socketTimeout: 20000,
-});
+  const mailjet = Mailjet.apiConnect(
+    process.env.MAIL_USER, // Ta clé publique
+    process.env.MAIL_PASS  // Ta clé privée
+  );
 
-  const mailOptions = {
-    from: `"Ton Portfolio" <yonna.s.merlini@gmail.com>`, 
-    replyTo: email, 
-    to: process.env.MAIL_TO,
-    subject: `Nouveau message Portfolio de ${name}`,
-    text: `Message de : ${name} (${email})\n\n${message}`,
-    html: `<h3>Nouveau message</h3><p>${message}</p>`
-  };
+  const request = mailjet.post("send", { 'version': 'v3.1' }).request({
+    "Messages": [{
+      "From": { "Email": "yonna.s.merlini@gmail.com", "Name": "Portfolio Yonna" },
+      "To": [{ "Email": process.env.MAIL_TO }],
+      "Subject": `Message de ${name}`,
+      "TextPart": message,
+      "HTMLPart": `<h3>Message de ${name} (${email})</h3><p>${message}</p>`
+    }]
+  });
 
-  await transporter.sendMail(mailOptions);
-  return true;
+  return request.then(() => true).catch((err) => { throw new Error(err.message); });
 };

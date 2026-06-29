@@ -18,12 +18,13 @@ const app = express();
 app.use(helmet({
   contentSecurityPolicy: false, 
 }));
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost', 'http://localhost:8080'], 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static('public'));

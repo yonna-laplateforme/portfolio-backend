@@ -10,15 +10,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Configuration du stockage
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'portfolio_projects',
     allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+    
     format: 'webp', 
     transformation: [
-        { width: 800, height: 600, crop: 'limit', quality: 'auto', fetch_format: 'webp' }
+        { quality: 'auto', fetch_format: 'webp' }
     ]
   },
 });

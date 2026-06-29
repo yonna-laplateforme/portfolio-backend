@@ -2,8 +2,7 @@ import db from '../config/db.js'
 import { sanitizeFeaturedValue } from '../utils/project.utils.js';
 
 
-import db from '../config/db.js'
-import { sanitizeFeaturedValue } from '../utils/project.utils.js';
+
 
 // LISTE DES COLONNES POUR UNIFORMISER
 const PROJECT_COLUMNS = `

@@ -1,3 +1,4 @@
+import nodemailer from 'nodemailer';
 export const sendContactEmail = async ({ name, email, message }) => {
   const transporter = nodemailer.createTransport({
     host: 'in-v3.mailjet.com', 

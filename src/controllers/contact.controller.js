@@ -1,6 +1,6 @@
 // On importe le service qui contient la logique métier pour l'envoi d'emails.
 import * as ContactService from '../services/contact.service.js';
-import nodemailer from 'nodemailer';
+
 
 // On importe une fonction utilitaire (helper) pour harmoniser le format
 // des réponses de succès renvoyées au client (le front-end).

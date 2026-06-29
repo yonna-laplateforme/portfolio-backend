@@ -2,12 +2,18 @@ import db from '../config/db.js'
 import { sanitizeFeaturedValue } from '../utils/project.utils.js';
 
 
+import db from '../config/db.js'
+import { sanitizeFeaturedValue } from '../utils/project.utils.js';
+
+// LISTE DES COLONNES POUR UNIFORMISER
+const PROJECT_COLUMNS = `
+    p.id, p.title, p.description, p.tech_stack, p.github_url, p.demo_url, 
+    p.client, p.role, p.date_realisation, p.visibility, p.isFeatured, p.category_id
+`;
+
 export const findForHome = async () => {
     const query = `
-        SELECT 
-            p.*, 
-            c.name AS category, 
-            GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
+        SELECT ${PROJECT_COLUMNS}, c.name AS category, GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
         FROM project p
         LEFT JOIN category c ON p.category_id = c.id
         LEFT JOIN photo ph ON p.id = ph.project_id
@@ -18,16 +24,10 @@ export const findForHome = async () => {
     const [rows] = await db.execute(query);
     return rows;
 };
-/**
- * Récupère tous les projets, du plus récent au plus ancien.
- * NOUVEAU : Utilise JOIN pour inclure la catégorie et les photos
- */
+
 export const findAll = async () => {
     const query = `
-        SELECT 
-            p.*, 
-            c.name AS category, 
-            GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
+        SELECT ${PROJECT_COLUMNS}, c.name AS category, GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
         FROM project p
         LEFT JOIN category c ON p.category_id = c.id
         LEFT JOIN photo ph ON p.id = ph.project_id
@@ -38,16 +38,9 @@ export const findAll = async () => {
     return rows;
 };
 
-/**
- * Récupère un projet spécifique par son ID.
- * NOUVEAU : Utilise JOIN pour inclure la catégorie et les photos
- */
 export const findById = async (id) => {
     const query = `
-        SELECT 
-            p.*, 
-            c.name AS category, 
-            GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
+        SELECT ${PROJECT_COLUMNS}, c.name AS category, GROUP_CONCAT(ph.url SEPARATOR ',') AS image_url
         FROM project p
         LEFT JOIN category c ON p.category_id = c.id
         LEFT JOIN photo ph ON p.id = ph.project_id
@@ -57,7 +50,6 @@ export const findById = async (id) => {
     const [rows] = await db.execute(query, [id]);
     return rows[0] ?? null;
 };
-
 /**
  * Crée un nouveau projet et ses images.
  */

@@ -15,20 +15,8 @@ import errorHandler from './middlewares/errorHandler.js';
 const app = express();
 
 // Middlewares globaux
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        "default-src": ["'self'"],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-        "img-src": ["'self'", "https://res.cloudinary.com", "data:", "blob:"],
-        "font-src": ["'self'", "https://fonts.gstatic.com"],
-        "connect-src": ["*"], // Autorise les connexions externes
-      },
-    },
-  })
-);
+// Désactivation totale de la CSP pour arrêter d'être bloqué par le navigateur
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(
   cors({

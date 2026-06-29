@@ -32,7 +32,13 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Cette méthode n'utilise PAS app.get(), donc aucune erreur de validation
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api')) {
-    return res.sendFile(path.join(__dirname, '../public', 'index.html'));
+    // On demande à Node de nous donner le chemin absolu actuel
+    const currentDir = process.cwd();
+    console.log("DEBUG: Dossier de travail actuel :", currentDir);
+    console.log("DEBUG: Contenu du dossier :", require('fs').readdirSync(currentDir));
+    
+    // Si tu vois un dossier 'dist' ou 'build' dans les logs, remplace '../public' par '../dist'
+    return res.sendFile(path.join(currentDir, 'public', 'index.html'));
   }
   next();
 });

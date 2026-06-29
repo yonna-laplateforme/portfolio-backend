@@ -15,7 +15,19 @@ import errorHandler from './middlewares/errorHandler.js';
 const app = express();
 
 // Middlewares globaux
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"], // Souvent nécessaire pour React/Vite
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "https://res.cloudinary.com", "data:", "blob:"], // Tes images et les blobs
+        connectSrc: ["'self'", "https://portfolio-backend-7xj4.onrender.com"], // Ton API
+      },
+    },
+  })
+);
 
 app.use(
   cors({

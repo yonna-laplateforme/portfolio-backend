@@ -15,20 +15,7 @@ import errorHandler from './middlewares/errorHandler.js';
 const app = express();
 
 // Middlewares globaux
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      "default-src": ["'self'"],
-      // Autorise les images
-      "img-src": ["'self'", "https://res.cloudinary.com", "data:"],
-      // Autorise spécifiquement votre backend Render
-      "connect-src": ["'self'", "https://portfolio-backend-7xj4.onrender.com"],
-      "style-src": ["'self'", "'unsafe-inline'"],
-      "script-src": ["'self'", "'unsafe-inline'"],
-      "upgrade-insecure-requests": null,
-    },
-  },
-}));
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(
   cors({

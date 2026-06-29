@@ -28,7 +28,6 @@ export const sendContactEmail = async ({ name, email, message }) => {
       let body = '';
       res.on('data', (chunk) => body += chunk);
       res.on('end', () => {
-        console.log("DEBUG: Réponse Mailjet :", res.statusCode, body);
         if (res.statusCode >= 200 && res.statusCode < 300) resolve(true);
         else reject(new Error("Erreur Mailjet: " + res.statusCode));
       });

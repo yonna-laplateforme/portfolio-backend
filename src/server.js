@@ -32,7 +32,14 @@ app.use(
 );
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
-app.use(express.static('public'));
+app.use((req, res, next) => {
+  if (!req.path.startsWith('/api')) {
+    const filePath = path.join(__dirname, '../dist', 'index.html'); // Essaie 'dist' au lieu de 'public'
+    console.log("DEBUG: Tentative de chargement de :", filePath);
+    return res.sendFile(filePath);
+  }
+  next();
+});
 app.use('/uploads', express.static('public/uploads'));
 
 // Branchement des routes

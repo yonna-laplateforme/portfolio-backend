@@ -1,15 +1,15 @@
-# Utilise l'image Node.js LTS basée sur Alpine Linux
-FROM node:lts-alpine
 
-# Définit un répertoire de travail
+FROM node:lts-alpine AS builder
 WORKDIR /app
-
-# Copie les fichiers de dépendances, puis les installe
 COPY package*.json ./
 RUN npm install
-
-# Copie le reste du code source dans le conteneur
 COPY . .
 
-# Définit la commande pour exécuter l'application
+# Étape 2 : Production
+FROM node:lts-alpine
+WORKDIR /app
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/src ./src
+EXPOSE 3001
 CMD ["node", "src/server.js"]

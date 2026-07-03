@@ -9,6 +9,7 @@ import projectRoutes from './routes/project.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import aboutRoutes from './routes/about.routes.js';
 import errorHandler from './middlewares/errorHandler.js';
+import technologyRoutes from './routes/technology.routes.js';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/about', aboutRoutes);
+app.use('/api/technologies', technologyRoutes);
 
 app.use(errorHandler);
 

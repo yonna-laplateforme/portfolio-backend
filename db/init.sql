@@ -94,7 +94,6 @@ CREATE TABLE `project` (
   `id` int NOT NULL,
   `title` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
-  `tech_stack` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `github_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `demo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -111,10 +110,32 @@ CREATE TABLE `project` (
 -- Déchargement des données de la table `project`
 --
 
-INSERT INTO `project` (`id`, `title`, `description`, `tech_stack`, `github_url`, `demo_url`, `created_at`, `updated_at`, `client`, `role`, `date_realisation`, `visibility`, `isFeatured`, `category_id`) VALUES
-(34, 'Projet photo', 'c\'est une plante verte', 'sony, lightroom', NULL, NULL, '2026-06-24 13:53:15', '2026-06-26 09:09:36', 'perso', NULL, '2026', 'Publié', 1, 2),
-(35, 'un autre projet ', 'plante', 'plante', NULL, NULL, '2026-06-24 16:13:25', '2026-06-26 09:09:36', 'personnel', NULL, '2026', 'Publié', 1, 1),
-(37, 'abcdefgh', 'June ', 'sony, lightroom', '', '', '2026-06-25 08:22:46', '2026-06-26 09:09:36', 'June M', 'dev', '2026', 'Publié', 1, 2);
+INSERT INTO `project` (`id`, `title`, `description`, `github_url`, `demo_url`, `created_at`, `updated_at`, `client`, `role`, `date_realisation`, `visibility`, `isFeatured`, `category_id`) VALUES
+(34, 'Projet photo', 'c\'est une plante verte', NULL, NULL, '2026-06-24 13:53:15', '2026-06-26 09:09:36', 'perso', NULL, '2026', 'Publié', 1, 2),
+(35, 'un autre projet ', 'plante', NULL, NULL, '2026-06-24 16:13:25', '2026-06-26 09:09:36', 'personnel', NULL, '2026', 'Publié', 1, 1),
+(37, 'abcdefgh', 'June ', '', '', '2026-06-25 08:22:46', '2026-06-26 09:09:36', 'June M', 'dev', '2026', 'Publié', 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `technology`
+--
+
+CREATE TABLE `technology` (
+  `id` int NOT NULL,
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `project_technology`
+--
+
+CREATE TABLE `project_technology` (
+  `project_id` int NOT NULL,
+  `technology_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -169,6 +190,20 @@ ALTER TABLE `project`
   ADD KEY `fk_project_category` (`category_id`);
 
 --
+-- Index pour la table `technology`
+--
+ALTER TABLE `technology`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
+
+--
+-- Index pour la table `project_technology`
+--
+ALTER TABLE `project_technology`
+  ADD PRIMARY KEY (`project_id`,`technology_id`),
+  ADD KEY `technology_id` (`technology_id`);
+
+--
 -- Index pour la table `user`
 --
 ALTER TABLE `user`
@@ -198,6 +233,12 @@ ALTER TABLE `project`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
+-- AUTO_INCREMENT pour la table `technology`
+--
+ALTER TABLE `technology`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
@@ -218,8 +259,14 @@ ALTER TABLE `photo`
 --
 ALTER TABLE `project`
   ADD CONSTRAINT `fk_project_category` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `project_technology`
+--
+ALTER TABLE `project_technology`
+  ADD CONSTRAINT `project_technology_ibfk_1` FOREIGN KEY (`project_id`) REFERENCES `project` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `project_technology_ibfk_2` FOREIGN KEY (`technology_id`) REFERENCES `technology` (`id`) ON DELETE CASCADE;
+
 COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER

@@ -12,20 +12,14 @@ import errorHandler from './middlewares/errorHandler.js';
 import technologyRoutes from './routes/technology.routes.js';
 
 const app = express();
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        "default-src": ["'self'", "https://res.cloudinary.com"],
-        "media-src": ["'self'", "https://res.cloudinary.com", "blob:", "data:"],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "style-src": ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-        "img-src": ["'self'", "data:", "https://res.cloudinary.com"],
-        "connect-src": ["'self'", "https://portfolio-backend-7xj4.onrender.com"],
-      },
-    },
-  })
-);
+// Middleware pour forcer l'autorisation de Cloudinary
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src * 'unsafe-inline' 'unsafe-eval' data: blob: https://res.cloudinary.com https://portfolio-backend-7xj4.onrender.com;"
+  );
+  next();
+});
 
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json({ limit: '10mb' }));

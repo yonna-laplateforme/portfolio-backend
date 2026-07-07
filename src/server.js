@@ -16,8 +16,11 @@ const app = express();
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src * 'unsafe-inline' 'unsafe-eval' data: blob: https://res.cloudinary.com https://portfolio-backend-7xj4.onrender.com; " +
-    "media-src 'self' https://res.cloudinary.com blob:;"
+    "default-src 'self' https://res.cloudinary.com https://upload-widget.cloudinary.com; " +
+    "script-src 'self' https://upload-widget.cloudinary.com 'unsafe-inline' 'unsafe-eval'; " +
+    "media-src 'self' https://res.cloudinary.com blob:; " +
+    "img-src 'self' https://res.cloudinary.com data:; " +
+    "connect-src 'self' https://api.cloudinary.com https://res.cloudinary.com https://portfolio-backend-7xj4.onrender.com;"
   );
   next();
 });

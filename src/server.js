@@ -13,19 +13,21 @@ import technologyRoutes from './routes/technology.routes.js';
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self'; " +
-    "script-src 'self' https://upload-widget.cloudinary.com https://widget.cloudinary.com 'unsafe-inline'; " +
-    "style-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' https://res.cloudinary.com data:; " +
-    "media-src 'self' https://res.cloudinary.com blob:; " +
-    "frame-src https://upload-widget.cloudinary.com; " +
-    "connect-src 'self' https://api.cloudinary.com https://res.cloudinary.com https://portfolio-backend-7xj4.onrender.com;"
-  );
-  next();
-});
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://upload-widget.cloudinary.com", "https://widget.cloudinary.com", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "https://res.cloudinary.com", "data:"],
+        mediaSrc: ["'self'", "https://res.cloudinary.com", "blob:"],
+        frameSrc: ["'self'", "https://upload-widget.cloudinary.com"],
+        connectSrc: ["'self'", "https://api.cloudinary.com", "https://res.cloudinary.com", "https://portfolio-backend-7xj4.onrender.com"],
+      },
+    },
+  })
+);
 
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json({ limit: '10mb' }));

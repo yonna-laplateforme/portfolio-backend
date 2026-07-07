@@ -2,31 +2,18 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
-import axios from 'axios';
 
 // Imports des routes
 import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import aboutRoutes from './routes/about.routes.js';
-import errorHandler from './middlewares/errorHandler.js';
 import technologyRoutes from './routes/technology.routes.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
-app.get('/api/video-proxy', async (req, res) => {
-  const videoUrl = req.query.url;
-  try {
-    const response = await axios({
-      method: 'get',
-      url: videoUrl,
-      responseType: 'stream'
-    });
-    response.data.pipe(res);
-  } catch (error) {
-    res.status(500).send("Erreur lors du chargement de la vidéo");
-  }
-});
 
+// 1. Sécurité globale
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -43,16 +30,18 @@ app.use(
   })
 );
 
+// 2. Middlewares de base
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json({ limit: '10mb' }));
 
-// SEULEMENT LES API
+// 3. Routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/about', aboutRoutes);
 app.use('/api/technologies', technologyRoutes);
 
+// 4. Gestion des erreurs (doit être en dernier)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;

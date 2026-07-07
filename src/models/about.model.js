@@ -14,7 +14,7 @@ export const update = async (data) => {
         header_subtitle = ?, bio_title = ?, bio_text = ?, 
         philosophy_quote = ?, philosophy_author = ?, philosophy_prefix = ?, 
         philosophy_important = ?, philosophy_suffix = ?, philosophy_text = ?, 
-        photo_url = ?
+        photo_url = ?, video_url = ?
         WHERE id = 1`;
 
     const params = [
@@ -30,7 +30,8 @@ export const update = async (data) => {
         data.philosophy_important ?? currentAbout.philosophy_important ?? null,
         data.philosophy_suffix ?? currentAbout.philosophy_suffix ?? null,
         data.philosophy_text ?? currentAbout.philosophy_text ?? null,
-        data.photo_url ?? currentAbout.photo_url ?? null
+        data.photo_url ?? currentAbout.photo_url ?? null,
+        data.video_url ?? currentAbout.video_url ?? null
     ];
 
     const [result] = await db.execute(sql, params);
@@ -41,6 +42,14 @@ export const updatePhotoUrl = async (photoUrl) => {
     const [result] = await db.execute(
         'UPDATE about_page SET photo_url = ? WHERE id = 1', 
         [photoUrl]
+    );
+    return result.affectedRows > 0;
+};
+
+export const updateVideoUrl = async (videoUrl) => {
+    const [result] = await db.execute(
+        'UPDATE about_page SET video_url = ? WHERE id = 1', 
+        [videoUrl]
     );
     return result.affectedRows > 0;
 };

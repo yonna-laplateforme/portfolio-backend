@@ -1,5 +1,4 @@
 import express from 'express';
-import express from 'express';
 import multer from 'multer';
 import * as projectController from '../controllers/project.controller.js'; 
 import { uploadImage } from '../utils/cloudinary.js'; 

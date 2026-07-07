@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
+import axios from 'axios';
 
 // Imports des routes
 import authRoutes from './routes/auth.routes.js';
@@ -12,6 +13,19 @@ import errorHandler from './middlewares/errorHandler.js';
 import technologyRoutes from './routes/technology.routes.js';
 
 const app = express();
+app.get('/api/video-proxy', async (req, res) => {
+  const videoUrl = req.query.url;
+  try {
+    const response = await axios({
+      method: 'get',
+      url: videoUrl,
+      responseType: 'stream'
+    });
+    response.data.pipe(res);
+  } catch (error) {
+    res.status(500).send("Erreur lors du chargement de la vidéo");
+  }
+});
 
 app.use(
   helmet({

@@ -9,3 +9,10 @@ export const findAll = async () => {
     const [rows] = await db.execute(query);
     return rows;
 };
+
+export const create = async (name) => {
+    const query = 'INSERT INTO technology (name) VALUES (?)';
+    const [result] = await db.execute(query, [name]);
+    // On retourne l'objet avec l'ID généré pour que le front puisse l'utiliser immédiatement
+    return { id: result.insertId, name };
+};

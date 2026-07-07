@@ -11,3 +11,16 @@ export const getAllTechnologies = async (req, res, next) => {
         next(error);
     }
 };
+
+export const create = async (req, res, next) => {
+    try {
+        const { name } = req.body;
+        // Appel de la méthode de ton modèle pour insérer en BDD
+        const newTech = await technologyModel.create(name);
+        
+        // Retourne la nouvelle techno créée avec son ID
+        res.status(201).json(newTech);
+    } catch (error) {
+        next(error);
+    }
+};

@@ -5,5 +5,6 @@ const router = express.Router();
 
 
 router.get('/', technologyController.getAllTechnologies);
+router.post('/', technologyController.create);
 
 export default router;

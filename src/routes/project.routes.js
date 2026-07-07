@@ -1,8 +1,8 @@
 import express from 'express';
+import express from 'express';
 import multer from 'multer';
-// CET IMPORT EST LA CLÉ : il importe tout le contrôleur sous le nom 'projectController'
 import * as projectController from '../controllers/project.controller.js'; 
-import upload from '../utils/cloudinary.js';
+import { uploadImage } from '../utils/cloudinary.js'; 
 import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 import { projectValidationRules, projectValidationId } from '../validators/project.validator.js';
 import validate from '../middlewares/validate.middleware.js';
@@ -11,7 +11,8 @@ const router = express.Router();
 
 // --- GESTIONNAIRE D'ERREURS D'UPLOAD ---
 const handleUpload = (req, res, next) => {
-  const uploadMultiple = upload.array('images', 10);
+  // On utilise uploadImage qui est ton middleware configuré
+  const uploadMultiple = uploadImage.array('images', 10);
   uploadMultiple(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ error: err.message });

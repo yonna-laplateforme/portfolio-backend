@@ -12,8 +12,20 @@ import errorHandler from './middlewares/errorHandler.js';
 import technologyRoutes from './routes/technology.routes.js';
 
 const app = express();
-
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(
+helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'"],
+        "style-src": ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+        "font-src": ["'self'", "fonts.gstatic.com"],
+        "img-src": ["'self'", "data:", "https://portfolio-backend-7xj4.onrender.com"],
+        "connect-src": ["'self'", "https://portfolio-backend-7xj4.onrender.com"],
+      },
+    },
+  })
+);
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json({ limit: '10mb' }));
 

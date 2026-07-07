@@ -12,11 +12,12 @@ import errorHandler from './middlewares/errorHandler.js';
 import technologyRoutes from './routes/technology.routes.js';
 
 const app = express();
-// Middleware pour forcer l'autorisation de Cloudinary
+
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src * 'unsafe-inline' 'unsafe-eval' data: blob: https://res.cloudinary.com https://portfolio-backend-7xj4.onrender.com;"
+    "default-src * 'unsafe-inline' 'unsafe-eval' data: blob: https://res.cloudinary.com https://portfolio-backend-7xj4.onrender.com; " +
+    "media-src 'self' https://res.cloudinary.com blob:;"
   );
   next();
 });

@@ -27,6 +27,13 @@ const app = express();
 //     },
 //   })
 // );
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;"
+  );
+  next();
+});
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json({ limit: '10mb' }));
 

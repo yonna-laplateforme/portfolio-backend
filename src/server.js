@@ -22,6 +22,7 @@ helmet({
         "font-src": ["'self'", "fonts.gstatic.com"],
         "img-src": ["'self'", "data:", "https://portfolio-backend-7xj4.onrender.com"],
         "connect-src": ["'self'", "https://portfolio-backend-7xj4.onrender.com"],
+        "media-src": ["'self'", "https://res.cloudinary.com"],
       },
     },
   })

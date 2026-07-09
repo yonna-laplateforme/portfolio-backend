@@ -28,17 +28,28 @@ router.get('/:id', projectController.getProjectById);
 router.get('/', projectController.getAllProjects);
 
 router.post('/', 
-  authenticate, authorize('admin'), handleUpload, projectValidationRules, validate, 
+  authenticate,
+  authorize('admin'),
+  handleUpload,
+  projectValidationRules,
+  validate, 
   projectController.createProject
 );
 
 router.put('/:id', 
-  authenticate, authorize('admin'), handleUpload, projectValidationId, projectValidationRules, validate, 
+  authenticate,
+  authorize('admin'),
+  handleUpload, projectValidationId,
+  projectValidationRules,
+  validate, 
   projectController.updateProject
 );
 
 router.delete('/:id', 
-  authenticate, authorize('admin'), projectValidationId, validate, 
+  authenticate,
+  authorize('admin'),
+  projectValidationId,
+  validate, 
   projectController.deleteProject
 );
 

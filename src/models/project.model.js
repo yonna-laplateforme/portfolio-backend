@@ -63,15 +63,15 @@ export const findById = async (id) => {
  * Crée un nouveau projet, ses images et ses technologies.
  */
 export const create = async (data) => {
-    
+
     const {
         title, description, technologies, github_url, demo_url, image_urls,
         client, role, date_realisation, visibility, isFeatured, category_id
     } = data;
-    
+
     const featuredValue = sanitizeFeaturedValue(isFeatured);
 
-    // 1. On insère le projet principal
+    // 1. INSERTION PROJET PRINCIPAL
     const [result] = await db.execute(
         `INSERT INTO project 
         (title, description, github_url, demo_url, client, role, date_realisation, visibility, isFeatured, category_id) 
@@ -85,21 +85,21 @@ export const create = async (data) => {
 
     const newProjectId = result.insertId;
 
-    // 2. On insère toutes les images
+    // 2. INSERTION IMAGES
     if (image_urls && image_urls.length > 0) {
         for (const url of image_urls) {
             await db.execute(
-                'INSERT INTO photo (project_id, url) VALUES (?, ?)', 
+                'INSERT INTO photo (project_id, url) VALUES (?, ?)',
                 [newProjectId, url]
             );
         }
     }
 
-    // 3. NOUVEAU : On insère les liaisons Many-to-Many pour les technologies
+    // 3. RELATION MANY TO MANY
     if (technologies && technologies.length > 0) {
         for (const techId of technologies) {
             await db.execute(
-                'INSERT INTO project_technology (project_id, technology_id) VALUES (?, ?)', 
+                'INSERT INTO project_technology (project_id, technology_id) VALUES (?, ?)',
                 [newProjectId, techId]
             );
         }
@@ -133,14 +133,15 @@ export const update = async (id, data) => {
             category_id = ?
         WHERE id = ?`,
         [
-            title || currentProject.title,
-            description || currentProject.description,
+
+            title !== undefined ? title : currentProject.title,
+            description !== undefined ? description : currentProject.description,
             github_url !== undefined ? github_url : currentProject.github_url,
             demo_url !== undefined ? demo_url : currentProject.demo_url,
             client !== undefined ? client : currentProject.client,
             role !== undefined ? role : currentProject.role,
             date_realisation !== undefined ? date_realisation : currentProject.date_realisation,
-            visibility || currentProject.visibility,
+            visibility !== undefined ? visibility : currentProject.visibility,
             finalIsFeatured,
             category_id !== undefined ? category_id : currentProject.category_id,
             id,
@@ -159,12 +160,12 @@ export const update = async (id, data) => {
     if (technologies !== undefined) {
         // On supprime les anciennes liaisons
         await db.execute('DELETE FROM project_technology WHERE project_id = ?', [id]);
-        
+
         // On recrée les nouvelles si on en a reçu
         if (technologies.length > 0) {
             for (const techId of technologies) {
                 await db.execute(
-                    'INSERT INTO project_technology (project_id, technology_id) VALUES (?, ?)', 
+                    'INSERT INTO project_technology (project_id, technology_id) VALUES (?, ?)',
                     [id, techId]
                 );
             }

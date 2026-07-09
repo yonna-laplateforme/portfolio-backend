@@ -1,4 +1,11 @@
+# Dépendances
 node_modules/
+
+# Variables d'environnement
 .env
-.git
-dist/
+
+# Rapports de tests
+coverage/
+
+# macOS
+.DS_Store

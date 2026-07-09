@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import * as projectController from '../controllers/project.controller.js'; 
-import { uploadImage,} from '../middlewares/upload.middleware.js';
+import { uploadImage} from '../middlewares/upload.middleware.js';
 import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 import { projectValidationRules, projectValidationId } from '../validators/project.validator.js';
 import validate from '../middlewares/validate.middleware.js';

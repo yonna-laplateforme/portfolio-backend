@@ -27,8 +27,7 @@ export const getProjectById = async (id) => {
  * CRÉER UN PROJET
  */
 export const createProject = async (projectData) => {
-  
-  return await projectModel.create(projectData);
+  return projectModel.create(projectData);
 };
 
 /**

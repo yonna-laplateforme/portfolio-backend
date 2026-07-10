@@ -3,30 +3,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+
+    container_name: portfolio-backend
+
     ports:
       - "3001:3001"
+
     env_file:
-      - .env  # Charge toutes tes variables ici
-    environment:
-      DB_HOST: mabase
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_NAME: portfolio_db
-      PORT: 3001
-    depends_on:
-      - mabase
+      - .env
 
-  mabase:
-    image: mysql:8
-    container_name: mabase
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: portfolio_db
-    volumes:
-      - db-data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-volumes:
-  db-data:
+    restart: unless-stopped

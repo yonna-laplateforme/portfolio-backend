@@ -11,7 +11,11 @@ const aboutValidator = {
     body('philosophy_important').trim().optional(),
     body('philosophy_suffix').trim().optional(),
     body('philosophy_text').trim().notEmpty().withMessage('Le texte de philosophie est requis'),
-    body('philosophy_author').trim().optional()
+    body('philosophy_author').trim().optional(),
+    body('dualite_title').trim().optional(),
+    body('dualite_text').trim().optional(),
+    body('tech_dev').trim().optional(),
+    body('tech_photo').trim().optional()
   ]
 };
 

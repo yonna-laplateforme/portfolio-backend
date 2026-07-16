@@ -1,29 +1,32 @@
 import multer from 'multer';
-import path from 'path';
-import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { cloudinary } from '../utils/cloudinary.js'; 
 
-// 1. Configuration de Cloudinary (Assure-toi d'avoir ces variables dans ton .env)
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+const createStorage = (folderName, resourceType = 'image') => {
+  return new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: folderName,
+      resource_type: resourceType,
+      ...(resourceType === 'image' && {
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+        format: 'webp',
+        transformation: [{ quality: 'auto', fetch_format: 'webp' }]
+      }),
+      ...(resourceType === 'video' && {
+        resource_type: 'video',
+        format: 'mp4'
+      })
+    },
+  });
+};
+
+export const uploadImage = multer({ 
+  storage: createStorage('portfolio_uploads', 'image'),
+  limits: { fileSize: 5 * 1024 * 1024 } 
 });
 
-// 2. Configuration du stockage Cloudinary
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'portfolio_uploads', // Le nom du dossier qui sera créé sur ton compte Cloudinary
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'], // Remplace ton ancien fileFilter
-    // transformation: [{ width: 1920, crop: 'limit' }] // Optionnel : Redimensionnement automatique pour éviter les images trop lourdes
-  },
+export const uploadVideo = multer({ 
+  storage: createStorage('portfolio_videos', 'video'),
+  limits: { fileSize: 20 * 1024 * 1024 } 
 });
-
-// 3. Initialisation de Multer avec Cloudinary
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Limite de 5Mo par image
-});
-
-export default upload;

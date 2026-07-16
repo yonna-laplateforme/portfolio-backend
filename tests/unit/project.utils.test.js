@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeFeaturedValue } from './project.utils.js';
+import { sanitizeFeaturedValue } from '../../src/utils/project.utils.js';
 
 describe('Fonction sanitizeFeaturedValue', () => {
   it('doit retourner 1 si la valeur est le booléen true', () => {

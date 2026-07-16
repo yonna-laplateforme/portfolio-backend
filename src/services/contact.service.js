@@ -1,41 +1,40 @@
-import nodemailer from 'nodemailer';
-import AppError from '../errors/AppError.js';
+import https from 'https';
 
 export const sendContactEmail = async ({ name, email, message }) => {
+  const auth = Buffer.from(`${process.env.MAIL_USER}:${process.env.MAIL_PASS}`).toString('base64');
   
-  // 💡 DÉPLACEMENT ICI : Le transporteur est créé à la demande, les variables .env sont lues à coup sûr !
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, 
-    auth: {
-      user: process.env.MAIL_USER, // yonna.s.merlini@gmail.com
-      pass: process.env.MAIL_PASS, // pekyuirstnlkdrhr
-    },
+  const data = JSON.stringify({
+    Messages: [{
+      From: { Email: "yonna.s.merlini@gmail.com", Name: "Portfolio Yonna" },
+      To: [{ Email: process.env.MAIL_TO }],
+      Subject: `Nouveau message de ${name}`,
+      HTMLPart: `<h3>Message de ${name}</h3><p>${message}</p>`
+    }]
   });
 
-  const mailOptions = {
-    from: `"${name}" <${process.env.MAIL_USER}>`, 
-    replyTo: email, 
-    to: process.env.MAIL_TO,
-    subject: `Nouveau message Portfolio de ${name}`,
-    text: `Vous avez reçu un message de : ${name} (${email})\n\nMessage :\n${message}`,
-    html: `
-      <h3>Nouveau message depuis votre Portfolio</h3>
-      <p><strong>Nom :</strong> ${name}</p>
-      <p><strong>Email :</strong> ${email}</p>
-      <p><strong>Message :</strong></p>
-      <p style="white-space: pre-wrap;">${message}</p>
-    `,
+  const options = {
+    hostname: 'api.mailjet.com',
+    path: '/v3.1/send',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${auth}`,
+      'Content-Length': Buffer.byteLength(data)
+    }
   };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log('✉️ Email envoyé avec succès par le Service !');
-    return true;
-  } catch (error) {
-    console.error('Erreur Nodemailer directe :', error);
-    throw new AppError("L'envoi de l'email a échoué. Veuillez réessayer plus tard.", 500);
-  }
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, (res) => {
+      let body = '';
+      res.on('data', (chunk) => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve(true);
+        else reject(new Error("Erreur Mailjet: " + res.statusCode));
+      });
+    });
+
+    req.on('error', (e) => reject(e));
+    req.write(data);
+    req.end();
+  });
 };

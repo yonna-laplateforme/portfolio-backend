@@ -5,7 +5,7 @@ export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    
+
     return next(new AppError("Token manquant ou format invalide", 401));
   }
 
@@ -13,7 +13,7 @@ export const authenticate = (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = payload; 
+    req.user = payload;
     next();
   } catch (err) {
     next(new AppError("Token invalide ou expiré", 401));
@@ -22,7 +22,7 @@ export const authenticate = (req, res, next) => {
 
 export const authorize = (role) => {
   return (req, res, next) => {
- 
+
     if (req.user.role !== role) {
       return next(new AppError("Accès refusé : privilèges insuffisants", 403));
     }

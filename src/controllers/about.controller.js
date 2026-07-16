@@ -18,7 +18,7 @@ export const updateAboutContent = async (req, res) => {
     }
 };
 
-// C'est celle-ci qui manquait ou était mal nommée !
+
 export const uploadAboutPhoto = async (req, res, next) => {
     try {
         if (!req.file) {
@@ -37,4 +37,23 @@ export const uploadAboutPhoto = async (req, res, next) => {
         res.status(500).json({ message: "Erreur upload", details: error.message });
     }
 
+};
+
+export const uploadAboutVideo = async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "Aucun fichier vidéo reçu" });
+        }
+        
+        console.log("Vidéo traitée par Cloudinary :", req.file);
+        
+        const videoUrl = req.file.path;
+       
+        await AboutService.updateVideoUrl(videoUrl);
+        
+        res.json({ videoUrl });
+    } catch (error) {
+        console.error("ERREUR DÉTAILLÉE VIDÉO :", error);
+        res.status(500).json({ message: "Erreur upload vidéo", details: error.message });
+    }
 };

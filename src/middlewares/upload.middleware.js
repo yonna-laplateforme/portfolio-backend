@@ -22,7 +22,6 @@ const createStorage = (folderName, resourceType = 'image') => {
 
       ...(resourceType === 'video' && {
         resource_type: 'video',
-        format: 'mp4',
       }),
     },
   });

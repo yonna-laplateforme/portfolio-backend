@@ -1,15 +1,30 @@
 import https from 'https';
 
 export const sendContactEmail = async ({ name, email, message }) => {
-  const auth = Buffer.from(`${process.env.MAIL_USER}:${process.env.MAIL_PASS}`).toString('base64');
-  
+  const auth = Buffer.from(
+    `${process.env.MAIL_USER}:${process.env.MAIL_PASS}`
+  ).toString('base64');
+
   const data = JSON.stringify({
-    Messages: [{
-      From: { Email: "yonna.s.merlini@gmail.com", Name: "Portfolio Yonna" },
-      To: [{ Email: process.env.MAIL_TO }],
-      Subject: `Nouveau message de ${name}`,
-      HTMLPart: `<h3>Message de ${name}</h3><p>${message}</p>`
-    }]
+    Messages: [
+      {
+        From: {
+          Email: "yonna.s.merlini@gmail.com",
+          Name: "Portfolio Yonna"
+        },
+        To: [
+          {
+            Email: process.env.MAIL_TO
+          }
+        ],
+        Subject: `Nouveau message de ${name}`,
+        HTMLPart: `
+          <h3>Message de ${name}</h3>
+          <p><strong>Email :</strong> ${email}</p>
+          <p>${message}</p>
+        `
+      }
+    ]
   });
 
   const options = {
@@ -18,7 +33,7 @@ export const sendContactEmail = async ({ name, email, message }) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${auth}`,
+      Authorization: `Basic ${auth}`,
       'Content-Length': Buffer.byteLength(data)
     }
   };
@@ -26,14 +41,24 @@ export const sendContactEmail = async ({ name, email, message }) => {
   return new Promise((resolve, reject) => {
     const req = https.request(options, (res) => {
       let body = '';
-      res.on('data', (chunk) => body += chunk);
+
+      res.on('data', (chunk) => {
+        body += chunk;
+      });
+
       res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) resolve(true);
-        else reject(new Error("Erreur Mailjet: " + res.statusCode));
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(true);
+        } else {
+          reject(new Error(`Erreur Mailjet: ${res.statusCode} - ${body}`));
+        }
       });
     });
 
-    req.on('error', (e) => reject(e));
+    req.on('error', (error) => {
+      reject(error);
+    });
+
     req.write(data);
     req.end();
   });

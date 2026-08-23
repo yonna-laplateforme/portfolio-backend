@@ -2,14 +2,12 @@ import jwt from 'jsonwebtoken';
 import AppError from '../errors/AppError.js';
 
 export const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  // LIT LE TOKEN DEPUIS LE COOKIE 
+  const token = req.cookies.token;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-
-    return next(new AppError("Token manquant ou format invalide", 401));
+  if (!token) {
+    return next(new AppError("Token manquant", 401));
   }
-
-  const token = authHeader.split(" ")[1];
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
@@ -22,7 +20,6 @@ export const authenticate = (req, res, next) => {
 
 export const authorize = (role) => {
   return (req, res, next) => {
-
     if (req.user.role !== role) {
       return next(new AppError("Accès refusé : privilèges insuffisants", 403));
     }

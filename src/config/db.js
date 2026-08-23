@@ -9,8 +9,7 @@ const pool = mysql.createPool({
   ssl: { rejectUnauthorized: false }
 });
 
-// C'est cette ligne qui résout le problème : 
-// Elle force mysql2 à utiliser les promesses partout.
+
 const promisePool = pool.promise();
 
 export default promisePool;

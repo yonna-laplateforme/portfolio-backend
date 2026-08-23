@@ -16,7 +16,7 @@ export const update = async (data) => {
         philosophy_important = ?, philosophy_suffix = ?, philosophy_text = ?, 
         photo_url = ?, video_url = ?, dualite_title = ?, dualite_text = ?, tech_dev = ?, tech_photo = ?
         WHERE id = 1`;
-
+   
     const params = [
         data.header_line1 ?? currentAbout.header_line1 ?? null,
         data.header_accent ?? currentAbout.header_accent ?? null,
@@ -31,11 +31,15 @@ export const update = async (data) => {
         data.philosophy_suffix ?? currentAbout.philosophy_suffix ?? null,
         data.philosophy_text ?? currentAbout.philosophy_text ?? null,
         data.photo_url ?? currentAbout.photo_url ?? null,
-        data.video_url ?? currentAbout.video_url ?? null,
+
+        Object.prototype.hasOwnProperty.call(data, 'video_url')
+            ? data.video_url
+            : currentAbout.video_url ?? null,
+
         data.dualite_title ?? currentAbout.dualite_title ?? null,
         data.dualite_text ?? currentAbout.dualite_text ?? null,
         data.tech_dev ?? currentAbout.tech_dev ?? null,
-        data.tech_photo ?? currentAbout.tech_photo ?? null
+        data.tech_photo ?? currentAbout.tech_photo ?? null,
     ];
 
     const [result] = await db.execute(sql, params);
@@ -44,7 +48,7 @@ export const update = async (data) => {
 
 export const updatePhotoUrl = async (photoUrl) => {
     const [result] = await db.execute(
-        'UPDATE about_page SET photo_url = ? WHERE id = 1', 
+        'UPDATE about_page SET photo_url = ? WHERE id = 1',
         [photoUrl]
     );
     return result.affectedRows > 0;
@@ -52,7 +56,7 @@ export const updatePhotoUrl = async (photoUrl) => {
 
 export const updateVideoUrl = async (videoUrl) => {
     const [result] = await db.execute(
-        'UPDATE about_page SET video_url = ? WHERE id = 1', 
+        'UPDATE about_page SET video_url = ? WHERE id = 1',
         [videoUrl]
     );
     return result.affectedRows > 0;

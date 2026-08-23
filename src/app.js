@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-
 
 import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
@@ -12,11 +12,9 @@ import technologyRoutes from './routes/technology.routes.js';
 
 import errorHandler from './middlewares/errorHandler.js';
 
-
 const app = express();
 
-
-// Sécurité globale
+// Sécurité : headers HTTP
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -28,6 +26,7 @@ app.use(
           "https://upload-widget.cloudinary.com",
           "https://widget.cloudinary.com",
           "'unsafe-inline'",
+          "'unsafe-eval'",
         ],
 
         styleSrc: [
@@ -39,6 +38,7 @@ app.use(
           "'self'",
           "https://res.cloudinary.com",
           "data:",
+          "blob:",
         ],
 
         mediaSrc: [
@@ -56,19 +56,26 @@ app.use(
           "'self'",
           "https://api.cloudinary.com",
           "https://res.cloudinary.com",
-          "https://portfolio-backend-7xj4.onrender.com",
+          "https://api.yonnamerlini.com",
         ],
       },
     },
+    hsts: { maxAge: 31536000, includeSubDomains: true },
+    frameguard: { action: 'deny' },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   })
 );
 
+// Cookies (pour le token HttpOnly)
+app.use(cookieParser());
 
-    
-// Middlewares
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+// CORS (autorise les cookies cross-origin)
+app.use(cors({
+  origin: process.env.CORS_ORIGIN,
+  credentials: true,
+}));
+
 app.use(express.json({ limit: '10mb' }));
-
 
 // Routes API
 app.use('/api/auth', authRoutes);
@@ -77,9 +84,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/about', aboutRoutes);
 app.use('/api/technologies', technologyRoutes);
 
-
 // Gestion erreurs
 app.use(errorHandler);
-
 
 export default app;

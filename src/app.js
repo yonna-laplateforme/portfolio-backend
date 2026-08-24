@@ -56,7 +56,7 @@ app.use(
           "'self'",
           "https://api.cloudinary.com",
           "https://res.cloudinary.com",
-          "https://api.yonnamerlini.com",
+          "https://api.www-yonnamerlini.com",
         ],
       },
     },

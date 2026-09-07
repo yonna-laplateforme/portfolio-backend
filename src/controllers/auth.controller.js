@@ -10,7 +10,7 @@ const login = async (req, res) => {
     httpOnly: true,      // JavaScript ne peut PAS lire ce cookie
     secure: true,        // Uniquement en HTTPS
     sameSite: 'strict',  // Protection CSRF
-    domain: '.www-yonnamerlini.com',  
+    domain: '.www.yonnamerlini.com',  
     maxAge: 24 * 60 * 60 * 1000, // 24 heures
   });
 

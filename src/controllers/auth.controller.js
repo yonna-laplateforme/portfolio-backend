@@ -6,11 +6,11 @@ const login = async (req, res) => {
   const token = await authService.loginUser({ email, password });
 
   // ✅ ENVOIE LE TOKEN EN COOKIE HTTPONLY (sécurisé contre XSS)
- res.cookie('token', token, {
+res.cookie('token', token, {
   httpOnly: true,
-  secure: true,        // HTTPS obligatoire pour SameSite=None
-  sameSite: 'none',    // ← LA correction : autorise l'envoi cross-site
-  maxAge: 24 * 60 * 60 * 1000
+  secure: true,        // ← à ajouter
+  sameSite: 'none',    // ← à ajouter (LA ligne qui compte)
+  maxAge: 24 * 60 * 60 * 1000   // garde ta durée actuelle si différente
 });
 
 

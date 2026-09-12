@@ -72,8 +72,10 @@ app.use(cookieParser());
 // CORS (autorise les cookies cross-origin)
 app.use(cors({
   origin: [
-    'https://yonnamerlini.netlify.app',
-    'http://localhost:5173'   // pour ton dev local
+    'https://yonnamerlini.com',
+  'https://www.yonnamerlini.com',
+  'https://yonnamerlini.netlify.app',
+  'http://localhost:5173'
   ],
   credentials: true   
 }));

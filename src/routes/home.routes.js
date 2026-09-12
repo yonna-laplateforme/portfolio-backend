@@ -1,30 +1,10 @@
-import { Router } from 'express';
-import * as homeController from '../controllers/home.controller.js';
-import { authenticate, authorize } from '../middlewares/auth.middleware.js';
-import { uploadImage, uploadVideo } from '../middlewares/upload.middleware.js';
-
-const router = Router();
-
-router.get('/', homeController.getHomeContent);
+import homeValidator from '../validators/home.validator.js';
+import { validate } from '../middlewares/validate.middleware.js'; // ← adapte : le nom exact chez toi
 
 router.put('/',
   authenticate,
   authorize('admin'),
+  homeValidator.rules,
+  validate,                       // ← celui qui renvoie les erreurs (errors.array())
   homeController.updateHomeContent
 );
-
-router.post('/video',
-  authenticate,
-  authorize('admin'),
-  uploadVideo.single('video'),
-  homeController.uploadHomeVideo
-);
-
-router.post('/poster',
-  authenticate,
-  authorize('admin'),
-  uploadImage.single('image'),
-  homeController.uploadHomePoster
-);
-
-export default router;

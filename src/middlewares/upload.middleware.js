@@ -30,7 +30,7 @@ const createStorage = (folderName, resourceType = 'image') => {
 export const uploadImage = multer({
   storage: createStorage('portfolio_uploads', 'image'),
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 15 * 1024 * 1024,   // ← 15 Mo par image
   },
 });
 

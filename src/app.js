@@ -21,13 +21,15 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
 
-        scriptSrc: [
-          "'self'",
-          "https://upload-widget.cloudinary.com",
-          "https://widget.cloudinary.com",
-          "'unsafe-inline'",
-          "'unsafe-eval'",
-        ],
+         scriptSrc: [
+  "'self'",
+  "https://upload-widget.cloudinary.com",
+  "https://widget.cloudinary.com",
+  "'unsafe-inline'",
+  // 'unsafe-eval' UNIQUEMENT en dev (Vite hot-reload), jamais en production
+  ...(process.env.NODE_ENV !== 'production' ? ["'unsafe-eval'"] : []),
+],
+        
 
         styleSrc: [
           "'self'",

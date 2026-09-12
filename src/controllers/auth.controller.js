@@ -12,7 +12,7 @@ const login = async (req, res) => {
   sameSite: 'none',    // ← LA correction : autorise l'envoi cross-site
   maxAge: 24 * 60 * 60 * 1000
 });
-app.set('trust proxy', 1);
+
 
   // Renvoie juste un succès (pas le token en clair)
   res.json({ success: true, message: 'Connexion réussie' });

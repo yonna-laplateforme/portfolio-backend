@@ -1,8 +1,7 @@
 import express from 'express';
-import login from '../controllers/auth.controller.js';
+import login, { me } from '../controllers/auth.controller.js';
 import validateAuth from '../validators/auth.validator.js';
 import validate from '../middlewares/validate.middleware.js';
-import { authenticate } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
@@ -14,9 +13,7 @@ router.post('/logout', (req, res) => {
   res.json({ success: true, message: 'Déconnexion réussie' });
 });
 
-// vérifie si le cookie est valide
-router.get('/me', authenticate, (req, res) => {
-  res.json({ user: req.user });
-});
+// ✅ Vérifie la session : renvoie toujours 200 (fin du 401 console)
+router.get('/me', me);
 
 export default router;

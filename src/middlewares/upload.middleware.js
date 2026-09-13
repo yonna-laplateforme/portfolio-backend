@@ -5,38 +5,42 @@ import { cloudinary } from '../utils/cloudinary.js';
 const createStorage = (folderName, resourceType = 'image') => {
   return new CloudinaryStorage({
     cloudinary,
-    params: {
-      folder: folderName,
-      resource_type: resourceType,
+    params: (req, file) => {
+      // 🎬 GIF animé : on ne touche à RIEN (sinon l'animation meurt)
+      if (file.mimetype === 'image/gif') {
+        return {
+          folder: folderName,
+          resource_type: 'image',
+          allowed_formats: ['gif'],
+        };
+      }
 
-      ...(resourceType === 'image' && {
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
-        format: 'webp',
-        transformation: [
-          {
-            quality: 'auto',
-            fetch_format: 'webp',
-          },
-        ],
-      }),
+      // 🖼️ Images classiques : optimisation webp qualité auto
+      if (resourceType === 'image') {
+        return {
+          folder: folderName,
+          resource_type: 'image',
+          allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+          format: 'webp',
+          transformation: [{ quality: 'auto', fetch_format: 'webp' }],
+        };
+      }
 
-      ...(resourceType === 'video' && {
+      // 🎥 Vidéos
+      return {
+        folder: folderName,
         resource_type: 'video',
-      }),
+      };
     },
   });
 };
 
 export const uploadImage = multer({
   storage: createStorage('portfolio_uploads', 'image'),
-  limits: {
-    fileSize: 15 * 1024 * 1024,   // ← 15 Mo par image
-  },
+  limits: { fileSize: 15 * 1024 * 1024 },
 });
 
 export const uploadVideo = multer({
   storage: createStorage('portfolio_videos', 'video'),
-  limits: {
-    fileSize: 200 * 1024 * 1024,
-  },
+  limits: { fileSize: 200 * 1024 * 1024 },
 });

@@ -10,7 +10,7 @@ const createStorage = (folderName, resourceType = 'image') => {
       resource_type: resourceType,
 
       ...(resourceType === 'image' && {
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
         format: 'webp',
         transformation: [
           {

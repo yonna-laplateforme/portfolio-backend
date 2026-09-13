@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import * as projectController from '../controllers/project.controller.js'; 
-import { uploadImage} from '../middlewares/upload.middleware.js';
+import { uploadProjectMedia } from '../middlewares/upload.middleware.js';
 import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 import { projectValidationRules, projectValidationId } from '../validators/project.validator.js';
 import validate from '../middlewares/validate.middleware.js';
@@ -11,7 +11,7 @@ const router = express.Router();
 // --- GESTIONNAIRE D'ERREURS D'UPLOAD ---
 const handleUpload = (req, res, next) => {
   
-  const uploadMultiple = uploadImage.array('images', 10);
+ const uploadMultiple = uploadProjectMedia.array('images', 10);
   uploadMultiple(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ error: err.message });

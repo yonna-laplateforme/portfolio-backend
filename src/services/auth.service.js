@@ -18,3 +18,12 @@ export const loginUser = async ({ email, password }) => {
         { expiresIn: '24h' }
     );
 };
+// Retourne l'utilisateur de la session (ou null si token absent/invalide)
+export const getSessionUser = (token) => {
+  try {
+    if (!token) return null;
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    return null;
+  }
+};

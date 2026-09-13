@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import * as authService from '../services/auth.service.js';
 
 const login = async (req, res) => {
@@ -5,17 +6,27 @@ const login = async (req, res) => {
 
   const token = await authService.loginUser({ email, password });
 
-  // ✅ ENVOIE LE TOKEN EN COOKIE HTTPONLY (sécurisé contre XSS)
-res.cookie('token', token, {
-  httpOnly: true,
-  secure: true,        // ← à ajouter
-  sameSite: 'none',    // ← à ajouter (LA ligne qui compte)
-  maxAge: 24 * 60 * 60 * 1000   // garde ta durée actuelle si différente
-});
+  // ✅ TOKEN EN COOKIE HTTPONLY (sécurisé contre XSS)
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
-
-  // Renvoie juste un succès (pas le token en clair)
   res.json({ success: true, message: 'Connexion réussie' });
+};
+
+// ✅ Renvoie toujours 200 : fini le 401 qui polluait la console
+export const me = async (req, res) => {
+  const decoded = authService.getSessionUser(req.cookies?.token);
+
+  if (!decoded) return res.json({ authenticated: false });
+
+  res.json({
+    authenticated: true,
+    user: { id: decoded.id, email: decoded.email, role: decoded.role },
+  });
 };
 
 export default login;

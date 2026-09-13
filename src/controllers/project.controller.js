@@ -10,7 +10,7 @@ export const getAllProjects = async (req, res) => {
 };
 
 /**
- * Récupérer les projets affichés sur la page d'accueil
+ * Récupérer les projets de la page d'accueil
  */
 export const getProjectsForHome = async (req, res) => {
   const projects = await ProjectService.getProjectsForHome();
@@ -21,13 +21,7 @@ export const getProjectsForHome = async (req, res) => {
  * Récupérer un projet par son ID
  */
 export const getProjectById = async (req, res) => {
-  const { id } = req.params;
-  const project = await ProjectService.getProjectById(id);
-
-  if (!project) {
-    throw new AppError('Projet introuvable', 404);
-  }
-
+  const project = await ProjectService.getProjectById(req.params.id);
   return res.json(project);
 };
 
@@ -35,22 +29,8 @@ export const getProjectById = async (req, res) => {
  * Créer un nouveau projet
  */
 export const createProject = async (req, res) => {
-  const projectData = { ...req.body };
-
-  projectData.isFeatured =
-    req.body.isFeatured === 'true' ||
-    req.body.isFeatured === 1 ||
-    req.body.isFeatured === '1'
-      ? 1
-      : 0;
-
-  projectData.image_urls =
-    req.files?.length > 0
-      ? req.files.map((file) => file.path)
-      : [];
-
-  const project = await ProjectService.createProject(projectData);
-
+  const newFilePaths = req.files?.map((file) => file.path) ?? [];
+  const project = await ProjectService.createProject(req.body, newFilePaths);
   return res.status(201).json(project);
 };
 
@@ -58,37 +38,11 @@ export const createProject = async (req, res) => {
  * Modifier un projet existant
  */
 export const updateProject = async (req, res) => {
-  const { id } = req.params;
-  const currentProject = await ProjectService.getProjectById(id);
-
-  if (!currentProject) {
-    throw new AppError('Projet introuvable', 404);
-  }
-
-  const projectData = { ...req.body };
-
-  projectData.isFeatured =
-    req.body.isFeatured === 'true' ||
-    req.body.isFeatured === 1 ||
-    req.body.isFeatured === '1'
-      ? 1
-      : 0;
-
-  const existingImages = currentProject.image_url
-    ? currentProject.image_url.split(',')
-    : [];
-
-  const newFilePaths =
-    req.files?.length > 0
-      ? req.files.map((file) => file.path)
-      : [];
-
-  projectData.image_urls = [...existingImages, ...newFilePaths];
-
-  const project = await ProjectService.updateProject(id, projectData);
-
-  return res.json(project);
+  const newFilePaths = req.files?.map((file) => file.path) ?? [];
+  const project = await ProjectService.updateProject(req.params.id, req.body, newFilePaths);
+  return res.json(project);   // ← pareil, le service throw la 404 si besoin
 };
+
 
 /**
  * Supprimer un projet

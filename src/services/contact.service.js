@@ -9,19 +9,24 @@ export const sendContactEmail = async ({ name, email, message }) => {
     Messages: [
       {
         From: {
-          Email: "yonna.s.merlini@gmail.com",
-          Name: "Portfolio Yonna"
+          Email: 'contact@yonnamerlini.com',   // ✅ domaine vérifié = plus de spam
+          Name: 'MRLN Agency'
         },
         To: [
           {
             Email: process.env.MAIL_TO
           }
         ],
+        ReplyTo: {                            // ✅ réponds directement au visiteur
+          Email: email,
+          Name: name
+        },
         Subject: `Nouveau message de ${name}`,
+        TextPart: `Message de ${name} (${email})\n\n${message}`,  // ✅ version texte
         HTMLPart: `
           <h3>Message de ${name}</h3>
           <p><strong>Email :</strong> ${email}</p>
-          <p>${message}</p>
+          <p>${message.replace(/\n/g, '<br>')}</p>
         `
       }
     ]

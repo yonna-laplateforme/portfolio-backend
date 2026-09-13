@@ -1,4 +1,5 @@
 import https from 'https';
+import { buildMailTemplate } from '../utils/mailTemplate.js';
 
 export const sendContactEmail = async ({ name, email, message }) => {
   const auth = Buffer.from(
@@ -9,7 +10,7 @@ export const sendContactEmail = async ({ name, email, message }) => {
     Messages: [
       {
         From: {
-          Email: 'contact@yonnamerlini.com',   // ✅ domaine vérifié = plus de spam
+          Email: 'contact@yonnamerlini.com',
           Name: 'MRLN Agency'
         },
         To: [
@@ -17,17 +18,17 @@ export const sendContactEmail = async ({ name, email, message }) => {
             Email: process.env.MAIL_TO
           }
         ],
-        ReplyTo: {                            // ✅ réponds directement au visiteur
+        ReplyTo: {
           Email: email,
           Name: name
         },
         Subject: `Nouveau message de ${name}`,
-        TextPart: `Message de ${name} (${email})\n\n${message}`,  // ✅ version texte
-        HTMLPart: `
-          <h3>Message de ${name}</h3>
-          <p><strong>Email :</strong> ${email}</p>
-          <p>${message.replace(/\n/g, '<br>')}</p>
-        `
+        TextPart: `Message de ${name} (${email})\n\n${message}`,
+        HTMLPart: buildMailTemplate({
+          title: 'Nouveau message du site',
+          fields: { Nom: name, Email: email },
+          message,
+        })
       }
     ]
   });
